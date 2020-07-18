@@ -2,6 +2,7 @@ parameters:
   softwareFolder: ''
   softwareName: ''
   softwareVersion: ''
+  APIScanEnable: ''
 
 steps:
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-apiscan.APIScan@2
@@ -13,3 +14,4 @@ steps:
     isLargeApp: false
     preserveTempFiles: true
   continueOnError: true
+  condition: eq(variables['APIScanEnable'], true)

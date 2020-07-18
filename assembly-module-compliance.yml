@@ -24,7 +24,7 @@ steps:
     softwareFolder: ''
     softwareName: ''
     softwareVersion: ''
-  condition: eq(variables['APIScan'], true)
+    APIScanEnable: ''
 
 - template: template-compliance/auto-applicability.yml
 
