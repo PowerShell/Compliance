@@ -1,5 +1,4 @@
 parameters:
-  poolName: 'Package ES CodeHub Lab E'
   # apiscan
   softwareFolder: ''
   softwareName: ''
@@ -19,54 +18,47 @@ parameters:
   # selections
   APIScan: true # set to false when not using Windows APIs.
 
-jobs:
-- job: compliance_job
-  displayName: Run compliance tasks
-  pool:
-    name: ${{ parameters.poolName }}
-  steps:
-  - download: current
+steps:
+- template: template-compliance/apiscan.yml
+  parameters:
+    softwareFolder: ''
+    softwareName: ''
+    softwareVersion: ''
+  condition: eq(variables['APIScan'], true)
 
-  - template: template-compliance/apiscan.yml
-    parameters:
-      softwareFolder: ''
-      softwareName: ''
-      softwareVersion: ''
-    condition: eq(variables['APIScan'], true)
+- template: template-compliance/auto-applicability.yml
 
-  - template: template-compliance/auto-applicability.yml
+- template: template-compliance/binskim.yml
+  parameters:
+    AnalyzeTarget: ${{ parameters.AnalyzeTarget }}
+    AnalyzeSymPath: ${{ parameters.AnalyzeSymPath }}
 
-  - template: template-compliance/binskim.yml
-    parameters:
-      AnalyzeTarget: ${{ parameters.AnalyzeTarget }}
-      AnalyzeSymPath: ${{ parameters.AnalyzeSymPath }}
+- template: template-compliance/component-governance.yml
+  parameters:
+    sourceScanPath: '$(Build.SourcesDirectory)'
 
-  - template: template-compliance/component-governance.yml
-    parameters:
-      sourceScanPath: '$(Build.SourcesDirectory)'
+- template: template-compliance/credscan.yml
+  parameters:
+    suppressionsFile: ''
 
-  - template: template-compliance/credscan.yml
-    parameters:
-      suppressionsFile: ''
+- template: template-compliance/defender.yml
 
-  - template: template-compliance/defender.yml
+- template: template-compliance/policheck.yml
+  parameters:
+    optionsRulesDBPath: ''
+    optionsFTPath: ''
 
-  - template: template-compliance/policheck.yml
-    parameters:
-      optionsRulesDBPath: ''
-      optionsFTPath: ''
+- template: template-compliance/vulnerability-assessment.yml
 
-  - template: template-compliance/vulnerability-assessment.yml
+- template: template-compliance/publish-security-logs.yml
 
-  - template: template-compliance/publish-security-logs.yml
+- template: template-compliance/tsa-upload.yml
+  parameters:
+    codeBaseName: ''
 
-  - template: template-compliance/tsa-upload.yml
-    parameters:
-      codeBaseName: ''
-
-  - template: template-compliance/sdtreport.yml
-    parameters:
-      APIScan: ${{ parameters.APIScan }}
-      BinSkim: true
-      CredScan: true
-      PoliCheck: true
+- template: template-compliance/sdtreport.yml
+  parameters:
+    APIScan: ${{ parameters.APIScan }}
+    BinSkim: true
+    CredScan: true
+    PoliCheck: true
