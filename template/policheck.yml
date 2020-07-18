@@ -1,0 +1,17 @@
+parameters:
+  optionsRulesDBPath: ''
+  optionsFTPath: ''
+
+steps:
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-policheck.PoliCheck@1
+  displayName: 'Run PoliCheck'
+  inputs:
+    targetType: F
+    optionsFC: 0
+    optionsXS: 0
+    optionsPE: '1|2|3|4'
+    optionsHMENABLE: 0
+    optionsRulesDBPath: ${{ parameters.optionsRulesDBPath }}
+    optionsFTPATH: ${{ parameters.optionsFTPath }}
+    toolVersion: 5.8.2.1
+  continueOnError: true

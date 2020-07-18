@@ -1,0 +1,15 @@
+parameters:
+  codeBaseName: ''
+
+steps:
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-uploadtotsa.TSAUpload@1
+  displayName: 'TSA upload to Codebase: PowerShellCore_201906'
+  inputs:
+    tsaVersion: TsaV2
+    codeBaseName: '${{ parameters.codeBaseName }}'
+    uploadFortifySCA: false
+    uploadFxCop: false
+    uploadModernCop: false
+    uploadPREfast: false
+    uploadRoslyn: false
+    uploadTSLint: false

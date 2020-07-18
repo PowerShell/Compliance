@@ -1,0 +1,10 @@
+parameters:
+  suppressionsFile: ''
+
+steps:
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
+  displayName: 'Run CredScan'
+  inputs:
+    suppressionsFile: ${{ parameters.suppressionsFile }}
+    debugMode: false
+  continueOnError: true

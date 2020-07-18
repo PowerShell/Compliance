@@ -1,0 +1,70 @@
+parameters:
+  poolName: 'Package ES CodeHub Lab E'
+  # apiscan
+  softwareFolder: ''
+  softwareName: ''
+  softwareVersion: ''
+  # binskim
+  AnalyzeTarget: ''
+  AnalyzeSymPath: 'SRV*'
+  # component-governance
+  sourceScanPath: '$(Build.SourcesDirectory)'
+  # credscan
+  suppressionsFile: ''
+  # policheck
+  optionsRulesDBPath: ''
+  optionsFTPath: ''
+  # tsa-upload
+  codeBaseName: ''
+  # selections
+  APIScan: true # set to false when not using Windows APIs.
+
+jobs:
+- job: compliance_job
+  displayName: Run compliance tasks
+  pool:
+    name: ${{ parameters.poolName }}
+  steps:
+  - template: template/apiscan.yml
+    parameters:
+      softwareFolder: ''
+      softwareName: ''
+      softwareVersion: ''
+    condition: eq(variables['APIScan'], true)
+
+  - template: template/auto-applicability.yml
+
+  - template: template/binskim.yml
+    parameters:
+      AnalyzeTarget: ${{ parameters.AnalyzeTarget }}
+      AnalyzeSymPath: ${{ parameters.AnalyzeSymPath }}
+
+  - template: template/component-governance.yml
+    parameters:
+      sourceScanPath: '$(Build.SourcesDirectory)'
+
+  - template: template/credscan.yml
+    parameters:
+      suppressionsFile: ''
+
+  - template: template/defender.yml
+
+  - template: template/policheck.yml
+    parameters:
+      optionsRulesDBPath: ''
+      optionsFTPath: ''
+
+  - template: template/vulnerability-assessment.yml
+
+  - template: template/publish-security-logs.yml
+
+  - template: template/tsa-upload.yml
+    parameters:
+      codeBaseName: ''
+
+  - template: template/sdtreport.yml
+    parameters:
+      APIScan: ${{ parameters.APIScan }}
+      BinSkim: true
+      CredScan: true
+      PoliCheck: true

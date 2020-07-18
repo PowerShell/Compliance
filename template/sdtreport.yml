@@ -1,0 +1,16 @@
+parameters:
+  APIScan: true
+  BinSkim: true
+  CredScan: true
+  PoliCheck: true
+
+steps:
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-report.SdtReport@1
+  displayName: 'Create Security Analysis Report'
+  inputs:
+    TsvFile: false
+    APIScan: ${{ parameters.APIScan }}
+    BinSkim: ${{ parameters.BinSkim }}
+    CredScan: ${{ parameters.CredScan }}
+    PoliCheck: ${{ parameters.PoliCheck }}
+    PoliCheckBreakOn: Severity2Above

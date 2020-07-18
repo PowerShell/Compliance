@@ -1,0 +1,8 @@
+steps:
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-autoapplicability.AutoApplicability@1
+  displayName: 'Run AutoApplicability'
+  inputs:
+    ExternalRelease: true
+    IsSoftware: true
+    DataSensitivity: lbi
+  continueOnError: true

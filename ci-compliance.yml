@@ -1,0 +1,12 @@
+parameters:
+  poolName: 'Package ES CodeHub Lab E'
+
+jobs:
+- job: compliance_job
+  displayName: Run compliance tasks
+  pool:
+    name: ${{ parameters.poolName }}
+  steps:
+  - template: template/credscan.yml
+    parameters:
+      suppressionsFile: ''
