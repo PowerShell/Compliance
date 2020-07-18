@@ -7,6 +7,6 @@ jobs:
   pool:
     name: ${{ parameters.poolName }}
   steps:
-  - template: template/credscan.yml
+  - template: template-compliance/credscan.yml
     parameters:
       suppressionsFile: ''

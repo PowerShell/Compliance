@@ -20,32 +20,32 @@ jobs:
   steps:
   - download: current
 
-  - template: template/auto-applicability.yml
+  - template: template-compliance/auto-applicability.yml
 
-  - template: template/component-governance.yml
+  - template: template-compliance/component-governance.yml
     parameters:
       sourceScanPath: '$(Build.SourcesDirectory)'
 
-  - template: template/credscan.yml
+  - template: template-compliance/credscan.yml
     parameters:
       suppressionsFile: ''
 
-  - template: template/defender.yml
+  - template: template-compliance/defender.yml
 
-  - template: template/policheck.yml
+  - template: template-compliance/policheck.yml
     parameters:
       optionsRulesDBPath: ''
       optionsFTPath: ''
 
-  - template: template/vulnerability-assessment.yml
+  - template: template-compliance/vulnerability-assessment.yml
 
-  - template: template/publish-security-logs.yml
+  - template: template-compliance/publish-security-logs.yml
 
-  - template: template/tsa-upload.yml
+  - template: template-compliance/tsa-upload.yml
     parameters:
       codeBaseName: ''
 
-  - template: template/sdtreport.yml
+  - template: template-compliance/sdtreport.yml
     parameters:
       APIScan: ${{ parameters.APIScan }}
       BinSkim: true
