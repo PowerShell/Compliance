@@ -25,6 +25,8 @@ jobs:
   pool:
     name: ${{ parameters.poolName }}
   steps:
+  - download: current
+
   - template: template/apiscan.yml
     parameters:
       softwareFolder: ''

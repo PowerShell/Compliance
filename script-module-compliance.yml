@@ -18,6 +18,8 @@ jobs:
   pool:
     name: ${{ parameters.poolName }}
   steps:
+  - download: current
+
   - template: template/auto-applicability.yml
 
   - template: template/component-governance.yml
