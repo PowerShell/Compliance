@@ -54,7 +54,7 @@ steps:
 
 - template: template-compliance/tsa-upload.yml
   parameters:
-    codeBaseName: ''
+    codeBaseName: ${{ parameters.codeBaseName }}
 
 - template: template-compliance/sdtreport.yml
   parameters:
