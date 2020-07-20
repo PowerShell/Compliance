@@ -13,5 +13,5 @@ steps:
     optionsHMENABLE: 0
     optionsRulesDBPath: ${{ parameters.optionsRulesDBPath }}
     optionsFTPATH: ${{ parameters.optionsFTPath }}
-    toolVersion: 5.8.2.1
+    toolVersion: Latest
   continueOnError: true
