@@ -12,5 +12,5 @@ steps:
     APIScan: ${{ parameters.APIScan }}
     BinSkim: ${{ parameters.BinSkim }}
     CredScan: ${{ parameters.CredScan }}
-    TermCheck: ${{ parameters.TermCheck }}
-    TermCheckBreakOn: Severity2Above
+    PolicCheck: ${{ parameters.TermCheck }}
+    PolicCheckBreakOn: Severity2Above
