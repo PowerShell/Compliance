@@ -2,7 +2,7 @@ parameters:
   APIScan: true
   BinSkim: true
   CredScan: true
-  PoliCheck: true
+  TermCheck: true
 
 steps:
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-report.SdtReport@1
@@ -12,5 +12,5 @@ steps:
     APIScan: ${{ parameters.APIScan }}
     BinSkim: ${{ parameters.BinSkim }}
     CredScan: ${{ parameters.CredScan }}
-    PoliCheck: ${{ parameters.PoliCheck }}
+    PoliCheck: ${{ parameters.TermCheck }}
     PoliCheckBreakOn: Severity2Above

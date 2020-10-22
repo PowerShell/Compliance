@@ -1,5 +1,7 @@
 # Compliance task library
 
+**Contents of this repository are intended for internal Microsoft use.**
+
 This repository contains Azure DevOPS YAML template for the compliance tasks needed for release products.
 The step templates can be included in the repository using [multi-checkout](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops).
 
@@ -49,7 +51,7 @@ The following sample shows how the templates can be included in your release YAM
             sourceScanPath: '$(Build.SourcesDirectory)'
             # credscan
             suppressionsFile: ''
-            # policheck
+            # TermCheck
             optionsRulesDBPath: ''
             optionsFTPath: ''
             # tsa-upload

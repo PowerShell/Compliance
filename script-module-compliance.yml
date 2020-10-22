@@ -3,7 +3,7 @@ parameters:
   sourceScanPath: '$(Build.SourcesDirectory)'
   # credscan
   suppressionsFile: ''
-  # policheck
+  # TermCheck
   optionsRulesDBPath: ''
   optionsFTPath: ''
   # tsa-upload
@@ -24,7 +24,7 @@ steps:
 
 - template: template-compliance/defender.yml
 
-- template: template-compliance/policheck.yml
+- template: template-compliance/TermCheck.yml
   parameters:
     optionsRulesDBPath: ''
     optionsFTPath: ''
@@ -42,4 +42,4 @@ steps:
     APIScan: ${{ parameters.APIScan }}
     BinSkim: true
     CredScan: true
-    PoliCheck: true
+    TermCheck: true
