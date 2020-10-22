@@ -68,7 +68,7 @@ The following sample shows how the templates can be included in your release YAM
     - template: EsrpSign@ComplianceRepo
         parameters:
            # the folder which contains the binaries to sign
-           buildOutputPath: $(signSrcPath
+           buildOutputPath: $(signSrcPath)
            # the location to put the signed output
            signOutputPath: $(signOutPath)
            # the certificate ID to use
@@ -76,7 +76,6 @@ The following sample shows how the templates can be included in your release YAM
            # the file pattern to use, comma separated
            pattern: '*.dll,*.psd1,*.psm1,*.ps1xml,*.mof'
     ```
-
 
 
 
