@@ -74,6 +74,7 @@ steps:
     inlineOperation: $(EsrpJson)
     Pattern: ${{ parameters.pattern }}
   condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
+  timeoutInMinutes: 30
 
 - pwsh: |
     Write-Verbose "BUILD_OUTPUT_PATH- ${{ parameters.buildOutputPath }}" -Verbose
