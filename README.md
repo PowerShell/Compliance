@@ -60,5 +60,24 @@ The following sample shows how the templates can be included in your release YAM
             APIScan: false # set to false when not using Windows APIs.
     ```
 
+## ESRP Template Example
+
+** Requires on-boarding, see the wiki in the internal PowerShell Maintainers teams channel **
+
+1. Call the template from this repo in your yaml file and specify the values for the parameters.
+
+    ```yaml
+    - template: EsrpSign@ComplianceRepo
+        parameters:
+           # the folder which contains the binaries to sign
+           buildOutputPath: $(signSrcPath)
+           # the location to put the signed output
+           signOutputPath: $(signOutPath)
+           # the certificate ID to use
+           certificateId: "CP-230012"
+           # the file pattern to use, comma separated
+           pattern: '*.dll,*.psd1,*.psm1,*.ps1xml,*.mof'
+    ```
+
 
 
