@@ -67,7 +67,7 @@ The following sample shows how the templates can be included in your release YAM
 1. Call the template from this repo in your yaml file and specify the values for the parameters.
 
     ```yaml
-    - template: EsrpSign@ComplianceRepo
+    - template: EsrpSign.yml@ComplianceRepo
         parameters:
            # the folder which contains the binaries to sign
            buildOutputPath: $(signSrcPath)
