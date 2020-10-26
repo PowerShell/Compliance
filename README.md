@@ -64,6 +64,9 @@ The following sample shows how the templates can be included in your release YAM
 
 ** Requires on-boarding, see the wiki in the internal PowerShell Maintainers teams channel **
 
+Make sure to create the variable group named `ESRP` and make it available to the pipeline.
+Details can be found in the PowerShell Maintainers teams channel's Wiki tab.
+
 1. Call the template from this repo in your yaml file and specify the values for the parameters.
 
     ```yaml
