@@ -14,16 +14,16 @@ steps:
   inputs:
     version: 2.x
 
-- template: template-compliance/authenticode-sign.yml
-  parameters:
-    buildOutputPath: ${{ parameters.buildOutputPath }}
-    signOutputPath: ${{ parameters.signOutputPath }}
-    pattern: ${{ parameters.pattern }}
-    certificateId: ${{ parameters.certificateId }}
-  condition: or(eq('${{ parameters.certificateId }}', 'CP-230012'), eq('${{ parameters.certificateId }}', 'CP-231522'))
+- ${{ if eq(or(eq('${{ parameters.certificateId }}', 'CP-230012'), eq('${{ parameters.certificateId }}', 'CP-231522')), true)}}:
+  - template: template-compliance/authenticode-sign.yml
+    parameters:
+      buildOutputPath: ${{ parameters.buildOutputPath }}
+      signOutputPath: ${{ parameters.signOutputPath }}
+      pattern: ${{ parameters.pattern }}
+      certificateId: ${{ parameters.certificateId }}
 
-- template: template-compliance/nuget-sign.yml
-  condition: eq('${{ parameters.certificateId }}', 'CP-401405')
+- ${{ if eq(eq('${{ parameters.certificateId }}', 'CP-401405'), true) }}:
+  - template: template-compliance/nuget-sign.yml
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
   displayName: Sign files
