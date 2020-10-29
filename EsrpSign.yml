@@ -21,7 +21,15 @@ steps:
     Write-Verbose -Verbose "pattern = '${{ parameters.pattern }}'"
   displayName: Log parameters
 
-- ${{ if or(eq(parameters.certificateId , 'CP-230012'), eq(parameters.certificateId , 'CP-231522')) }}:
+- ${{ if eq(parameters.certificateId , 'CP-230012') }}:
+  - template: template-compliance/authenticode-sign.yml
+    parameters:
+      buildOutputPath: ${{ parameters.buildOutputPath }}
+      signOutputPath: ${{ parameters.signOutputPath }}
+      pattern: ${{ parameters.pattern }}
+      certificateId: ${{ parameters.certificateId }}
+
+- ${{ if eq(parameters.certificateId , 'CP-231522') }}:
   - template: template-compliance/authenticode-sign.yml
     parameters:
       buildOutputPath: ${{ parameters.buildOutputPath }}
