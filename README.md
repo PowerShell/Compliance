@@ -15,7 +15,7 @@ The following sample shows how the templates can be included in your release YAM
      - repository: ComplianceRepo
        type: github
        endpoint: ComplianceGHRepo
-       name: adityapatwardhan/compliance
+       name: PowerShell/compliance
    ```
 
 1. In the compliance stage, checkout `self` repo and the `compliance` repo.
