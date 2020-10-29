@@ -14,16 +14,36 @@ steps:
   inputs:
     version: 2.x
 
-- template: template-compliance/authenticode-sign.yml
-  parameters:
-    buildOutputPath: ${{ parameters.buildOutputPath }}
-    signOutputPath: ${{ parameters.signOutputPath }}
-    pattern: ${{ parameters.pattern }}
-    certificateId: ${{ parameters.certificateId }}
-  condition: or(eq('${{ parameters.certificateId }}', 'CP-230012'), eq('${{ parameters.certificateId }}', 'CP-231522'))
+- pwsh: |
+    Write-Verbose -Verbose "buildOutputPath = '${{ parameters.buildOutputPath }}'"
+    Write-Verbose -Verbose "signOutputPath = '${{ parameters.signOutputPath }}'"
+    Write-Verbose -Verbose "certificateId = '${{ parameters.certificateId }}'"
+    Write-Verbose -Verbose "pattern = '${{ parameters.pattern }}'"
+  displayName: Log parameters
 
-- template: template-compliance/nuget-sign.yml
-  condition: eq('${{ parameters.certificateId }}', 'CP-401405')
+- ${{ if eq(parameters.certificateId , 'CP-230012') }}:
+  - template: template-compliance/authenticode-sign.yml
+    parameters:
+      buildOutputPath: ${{ parameters.buildOutputPath }}
+      signOutputPath: ${{ parameters.signOutputPath }}
+      pattern: ${{ parameters.pattern }}
+      certificateId: ${{ parameters.certificateId }}
+
+- ${{ if eq(parameters.certificateId , 'CP-231522') }}:
+  - template: template-compliance/authenticode-sign.yml
+    parameters:
+      buildOutputPath: ${{ parameters.buildOutputPath }}
+      signOutputPath: ${{ parameters.signOutputPath }}
+      pattern: ${{ parameters.pattern }}
+      certificateId: ${{ parameters.certificateId }}
+
+- ${{ if eq(parameters.certificateId, 'CP-401405') }}:
+  - template: template-compliance/nuget-sign.yml
+    parameters:
+      buildOutputPath: ${{ parameters.buildOutputPath }}
+      signOutputPath: ${{ parameters.signOutputPath }}
+      pattern: ${{ parameters.pattern }}
+      certificateId: ${{ parameters.certificateId }}
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
   displayName: Sign files

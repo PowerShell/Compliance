@@ -21,12 +21,6 @@ steps:
          operationSetCode = "NuGetSign"
          toolName = "sign"
          toolVersion = "1.0"
-        },
-        @{
-          keyCode = $CertificateId
-          operationSetCode = "NuGetVerify"
-          toolName = "sign"
-          toolVersion = "1.0"
         }
     )
 
