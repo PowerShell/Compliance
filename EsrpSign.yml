@@ -52,7 +52,6 @@ steps:
   inputs:
     ConnectedServiceName: pwshSigning
     FolderPath: '${{ parameters.buildOutputPath }}'
-    UseMinimatch: false
     signConfigType: inlineSignParams
     inlineOperation: $(EsrpJson)
     Pattern: ${{ parameters.pattern }}
