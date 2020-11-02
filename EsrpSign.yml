@@ -7,6 +7,8 @@ parameters:
     default: "CP-230012"
   - name: "pattern"
     default: "*.dll,*.exe"
+  - name: "useMinimatch"
+    default: "false"
 
 steps:
 - task: UseDotNet@2
@@ -50,10 +52,10 @@ steps:
   inputs:
     ConnectedServiceName: pwshSigning
     FolderPath: '${{ parameters.buildOutputPath }}'
-    UseMinimatch: false
     signConfigType: inlineSignParams
     inlineOperation: $(EsrpJson)
     Pattern: ${{ parameters.pattern }}
+    UseMinimatch: ${{ parameters.useMinimatch }}
   condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
   timeoutInMinutes: 30
 

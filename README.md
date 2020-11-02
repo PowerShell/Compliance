@@ -78,8 +78,14 @@ Details can be found in the PowerShell Maintainers teams channel's Wiki tab.
            signOutputPath: $(signOutPath)
            # the certificate ID to use
            certificateId: "CP-230012"
-           # the file pattern to use, comma separated
+           # The file pattern to use
+           # If not using minimatch: comma separated, with * supported
+           # If using minimatch: newline separated, with !, **, and * supported.
+           # See link in the useMinimatch comments.
            pattern: '*.dll,*.psd1,*.psm1,*.ps1xml,*.mof'
+           # decides if the task should use minimatch for the pattern matching.
+           # https://github.com/isaacs/minimatch#features
+           useMinimatch: false
     ```
 
 
