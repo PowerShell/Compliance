@@ -80,6 +80,9 @@ Details can be found in the PowerShell Maintainers teams channel's Wiki tab.
            certificateId: "CP-230012"
            # the file pattern to use, comma separated
            pattern: '*.dll,*.psd1,*.psm1,*.ps1xml,*.mof'
+           # decides if the task should use minimatch for the pattern matching.
+           # https://github.com/isaacs/minimatch#features
+           useMinimatch: false
     ```
 
 
