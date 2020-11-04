@@ -21,10 +21,10 @@ parameters:
 steps:
 - template: template-compliance/apiscan.yml
   parameters:
-    softwareFolder: ''
-    softwareName: ''
-    softwareVersion: ''
-    APIScanEnable: ''
+    softwareFolder: ${{ parameters.softwareFolder }}
+    softwareName: ${{ parameters.softwareName }}
+    softwareVersion: ${{ parameters.softwareVersion }}
+    APIScanEnable: ${{ parameters.APIScan }}
 
 - template: template-compliance/auto-applicability.yml
 
@@ -39,14 +39,14 @@ steps:
 
 - template: template-compliance/credscan.yml
   parameters:
-    suppressionsFile: ''
+    suppressionsFile: ${{ parameters.suppressionsFile }}
 
 - template: template-compliance/defender.yml
 
 - template: template-compliance/TermCheck.yml
   parameters:
-    optionsRulesDBPath: ''
-    optionsFTPath: ''
+    optionsRulesDBPath: ${{ parameters.optionsRulesDBPath }}
+    optionsFTPath: ${{ parameters.optionsFTPath }}
 
 - template: template-compliance/vulnerability-assessment.yml
 

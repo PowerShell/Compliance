@@ -20,14 +20,14 @@ steps:
 
 - template: template-compliance/credscan.yml
   parameters:
-    suppressionsFile: ''
+    suppressionsFile: ${{ parameters.suppressionsFile }}
 
 - template: template-compliance/defender.yml
 
 - template: template-compliance/TermCheck.yml
   parameters:
-    optionsRulesDBPath: ''
-    optionsFTPath: ''
+    optionsRulesDBPath: ${{ parameters.optionsRulesDBPath }}
+    optionsFTPath: ${{ parameters.optionsFTPath  }}
 
 - template: template-compliance/vulnerability-assessment.yml
 
@@ -35,11 +35,12 @@ steps:
 
 - template: template-compliance/tsa-upload.yml
   parameters:
-    codeBaseName: ''
+    codeBaseName: ${{ parameters.codeBaseName }}
 
 - template: template-compliance/sdtreport.yml
   parameters:
     APIScan: ${{ parameters.APIScan }}
-    BinSkim: true
+    # script modules should not distribute binaries
+    BinSkim: false
     CredScan: true
     TermCheck: true
