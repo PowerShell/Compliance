@@ -62,8 +62,11 @@ steps:
 - pwsh: |
     Write-Verbose "BUILD_OUTPUT_PATH- ${{ parameters.buildOutputPath }}" -Verbose
     Write-Verbose "SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }}" -Verbose
+    $file = Get-ChildItem -Path "${{ parameters.buildOutputPath }}\codesignsummary-*.md" -File
+    $fileName = $file.Name
+    Move-Item -Path "${{ parameters.buildOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName"
+    Write-Host "##vso[artifact.upload containerfolder=signingReport;artifactname=signingReport]$(Agent.TempDirectory)\$fileName"
     Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
   displayName: Copy signed files to signed output directory
   condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
   timeoutInMinutes: 10
-
