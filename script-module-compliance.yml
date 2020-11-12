@@ -16,7 +16,7 @@ steps:
 
 - template: template-compliance/component-governance.yml
   parameters:
-    sourceScanPath: '$(Build.SourcesDirectory)'
+    sourceScanPath: ${{ parameters.sourceScanPath }}
 
 - template: template-compliance/credscan.yml
   parameters:
