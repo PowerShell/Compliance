@@ -62,6 +62,11 @@ steps:
 - pwsh: |
     Write-Verbose "BUILD_OUTPUT_PATH- ${{ parameters.buildOutputPath }}" -Verbose
     Write-Verbose "SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }}" -Verbose
+    if(!(Test-Path '${{ parameters.signOutputPath }}'))
+    {
+      Write-Verbose "Creating SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }}" -Verbose
+      $null = New-Item -Path '${{ parameters.signOutputPath }}' -ItemType Directory -force
+    }
     $file = Get-ChildItem -Path "${{ parameters.buildOutputPath }}\codesignsummary-*.md" -File
     $fileName = $file.Name
     Move-Item -Path "${{ parameters.buildOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName"
