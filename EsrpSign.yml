@@ -57,6 +57,10 @@ steps:
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
 
+- pwsh: |
+    Write-Verbose -Verbose "EsrpJson = '$(EsrpJson)'"
+  displayName: Log Json
+
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
   displayName: Sign files
   inputs:
