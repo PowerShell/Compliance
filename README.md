@@ -60,7 +60,7 @@ The following sample shows how the templates can be included in your release YAM
             APIScan: false # set to false when not using Windows APIs.
     ```
 
-## ESRP Template Example
+## ESRP Template Overview
 
 ** Requires on-boarding, see the wiki in the internal PowerShell Maintainers teams channel **
 
@@ -69,24 +69,75 @@ Details can be found in the PowerShell Maintainers teams channel's Wiki tab.
 
 1. Call the template from this repo in your yaml file and specify the values for the parameters.
 
-    ```yaml
-    - template: EsrpSign.yml@ComplianceRepo
-        parameters:
-           # the folder which contains the binaries to sign
-           buildOutputPath: $(signSrcPath)
-           # the location to put the signed output
-           signOutputPath: $(signOutPath)
-           # the certificate ID to use
-           certificateId: "CP-230012"
-           # The file pattern to use
-           # If not using minimatch: comma separated, with * supported
-           # If using minimatch: newline separated, with !, **, and * supported.
-           # See link in the useMinimatch comments.
-           pattern: '*.dll,*.psd1,*.psm1,*.ps1xml,*.mof'
-           # decides if the task should use minimatch for the pattern matching.
-           # https://github.com/isaacs/minimatch#features
-           useMinimatch: false
-    ```
+```yaml
+- template: EsrpSign.yml@ComplianceRepo
+    parameters:
+        # the folder which contains the binaries to sign
+        buildOutputPath: $(signSrcPath)
+        # the location to put the signed output
+        signOutputPath: $(signOutPath)
+        # the certificate ID to use
+        certificateId: "CP-230012"
+        # The file pattern to use
+        # If not using minimatch: comma separated, with * supported
+        # If using minimatch: newline separated, with !, **, and * supported.
+        # See link in the useMinimatch comments.
+        pattern: '*.dll,*.psd1,*.psm1,*.ps1xml,*.mof'
+        # decides if the task should use minimatch for the pattern matching.
+        # https://github.com/isaacs/minimatch#features
+        useMinimatch: false
+```
+
+### ESRP Authenticode minimatch example
+
+This example signs `dll` and `psm1` files recursively and `psd1` files in the root of the `buildOutputPath`, using minimatch.
+
+For full features see:  https://github.com/isaacs/minimatch#features
+
+```yaml
+  - template: EsrpSign.yml@ComplianceRepo
+      parameters:
+        buildOutputPath: $(signSrcPath)
+        signOutputPath: $(signOutPath)
+        certificateId: "CP-230012"
+        pattern: |
+          **\*.dll
+          *.psd1
+          **\*.psm1
+        useMinimatch: true
+```
+
+### ESRP RPM example
+
+This example signs `dll` `psd1` and `psm1` files recursively, using minimatch.
+
+```yaml
+  - template: EsrpSign.yml@ComplianceRepo
+      parameters:
+        buildOutputPath: $(signSrcPath)
+        signOutputPath: $(signOutPath)
+        # this is the cert for RPM signing
+        certificateId: "CP-450779-Pgp"
+        # this is the pattern for RPM signing
+        pattern: |
+            **\*.rpm
+        useMinimatch: true
+```
 
 
+### ESRP NuPkg example
 
+This example signs `dll` `psd1` and `psm1` files recursively, using minimatch.
+
+```yaml
+  - template: EsrpSign.yml@ComplianceRepo
+      parameters:
+        buildOutputPath: $(signSrcPath)
+        signOutputPath: $(signOutPath)
+        # this is the cert for NuPkg signing
+        certificateId: "CP-401405"
+        # this is the pattern for NuPkg signing
+        pattern: |
+            **\*.nupkg
+        useMinimatch: true
+```
