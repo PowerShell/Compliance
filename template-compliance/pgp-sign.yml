@@ -22,7 +22,6 @@ steps:
     $esrp = @(@{
     keyCode = $CertificateId
     operationSetCode = "LinuxSign"
-    parameters = @{}
     toolName = "sign"
     toolVersion = "1.0"
     })
