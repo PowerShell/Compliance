@@ -1,6 +1,4 @@
 parameters:
-  - name: "buildOutputPath"
-    default: "$(Build.ArtifactStagingDirectory)\\build"
   - name: "signOutputPath"
     default: "$(Build.ArtifactStagingDirectory)\\signed"
   - name: "pattern"
