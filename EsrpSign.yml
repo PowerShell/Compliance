@@ -52,7 +52,6 @@ steps:
 - ${{ if or(eq(parameters.certificateId, 'CP-450779-Pgp'),eq(parameters.certificateId, 'CP-450778-Pgp')) }}:
   - template: template-compliance/pgp-sign.yml
     parameters:
-      buildOutputPath: ${{ parameters.buildOutputPath }}
       signOutputPath: ${{ parameters.signOutputPath }}
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
