@@ -66,10 +66,6 @@ steps:
       Write-Verbose "Creating SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }}" -Verbose
       $null = New-Item -Path '${{ parameters.signOutputPath }}' -ItemType Directory -force
     }
-    $file = Get-ChildItem -Path "${{ parameters.buildOutputPath }}\codesignsummary-*.md" -File
-    $fileName = $file.Name
-    Move-Item -Path "${{ parameters.buildOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName"
-    Write-Host "##vso[artifact.upload containerfolder=signingReport;artifactname=signingReport]$(Agent.TempDirectory)\$fileName"
     Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
   displayName: Copy unsigned files to signed output directory
   condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
@@ -87,4 +83,11 @@ steps:
   condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
   timeoutInMinutes: 30
 
-
+- pwsh: |
+    $file = Get-ChildItem -Path "${{ parameters.signOutputPath }}\codesignsummary-*.md" -File
+    $fileName = $file.Name
+    Move-Item -Path "${{ parameters.buildOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName"
+    Write-Host "##vso[artifact.upload containerfolder=signingReport;artifactname=signingReport]$(Agent.TempDirectory)\$fileName"
+  displayName: Upload codesign summary
+  condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
+  timeoutInMinutes: 10
