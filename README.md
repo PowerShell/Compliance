@@ -27,7 +27,7 @@ The following sample shows how the templates can be included in your release YAM
       jobs:
       - job: Compliance_Job
           pool:
-          name: Package ES CodeHub Lab E
+            name: Package ES Standard Build
           steps:
           - checkout: self
           - checkout: ComplianceRepo
@@ -60,7 +60,7 @@ The following sample shows how the templates can be included in your release YAM
             APIScan: false # set to false when not using Windows APIs.
     ```
 
-## ESRP Template Overview
+## ESRP Signing Template Overview
 
 ** Requires on-boarding, see the wiki in the internal PowerShell Maintainers teams channel **
 
@@ -140,4 +140,26 @@ This example signs `dll` `psd1` and `psm1` files recursively, using minimatch.
         pattern: |
             **\*.nupkg
         useMinimatch: true
+```
+
+## ESRP Malware Scanning Template Overview
+
+** Requires on-boarding, see the wiki in the internal PowerShell Maintainers teams channel **
+
+Details can be found in the PowerShell Maintainers teams channel's Wiki tab.
+
+1. Call the template from this repo in your yaml file and specify the values for the parameters.
+
+```yaml
+
+  - template: EsrpScan.yml@ComplianceRepo
+    parameters:
+        # the path with the files to scan
+        scanPath: $(System.ArtifactsDirectory)
+        # the minimatch pattern to find the files
+        # https://github.com/isaacs/minimatch#features
+        pattern: |
+          **\*.rpm
+          **\*.deb
+          **\*.tar.gz
 ```
