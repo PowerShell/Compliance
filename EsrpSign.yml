@@ -86,7 +86,7 @@ steps:
 - pwsh: |
     $file = Get-ChildItem -Path "${{ parameters.signOutputPath }}\codesignsummary-*.md" -File
     $fileName = $file.Name
-    Move-Item -Path "${{ parameters.buildOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName"
+    Move-Item -Path "${{ parameters.signOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName"
     Write-Host "##vso[artifact.upload containerfolder=signingReport;artifactname=signingReport]$(Agent.TempDirectory)\$fileName"
   displayName: Upload codesign summary
   condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
