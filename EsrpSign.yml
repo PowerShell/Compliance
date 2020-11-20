@@ -9,6 +9,8 @@ parameters:
     default: "*.dll,*.exe"
   - name: "useMinimatch"
     default: "false"
+  - name: "condition"
+    default: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
 
 steps:
 - task: UseDotNet@2
@@ -47,6 +49,18 @@ steps:
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
 
+- ${{ if or(eq(parameters.certificateId, 'CP-450779-Pgp'),eq(parameters.certificateId, 'CP-450778-Pgp')) }}:
+  - template: template-compliance/pgp-sign.yml
+    parameters:
+      buildOutputPath: ${{ parameters.buildOutputPath }}
+      signOutputPath: ${{ parameters.signOutputPath }}
+      pattern: ${{ parameters.pattern }}
+      certificateId: ${{ parameters.certificateId }}
+
+- pwsh: |
+    Write-Verbose -Verbose "EsrpJson = '${env:EsrpJson}'"
+  displayName: Log Json
+
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
   displayName: Sign files
   inputs:
@@ -56,7 +70,7 @@ steps:
     inlineOperation: $(EsrpJson)
     Pattern: ${{ parameters.pattern }}
     UseMinimatch: ${{ parameters.useMinimatch }}
-  condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
+  condition: ${{ parameters.condition }}
   timeoutInMinutes: 30
 
 - pwsh: |
@@ -73,5 +87,5 @@ steps:
     Write-Host "##vso[artifact.upload containerfolder=signingReport;artifactname=signingReport]$(Agent.TempDirectory)\$fileName"
     Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
   displayName: Copy signed files to signed output directory
-  condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
+  condition: ${{ parameters.condition }}
   timeoutInMinutes: 10

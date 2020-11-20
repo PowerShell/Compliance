@@ -1,28 +1,28 @@
 parameters:
-  - name: "buildOutputPath"
-    default: "$(Build.ArtifactStagingDirectory)\\build"
   - name: "signOutputPath"
     default: "$(Build.ArtifactStagingDirectory)\\signed"
   - name: "pattern"
-    default: "*.nupkg"
+    default: "*.rpm,*.deb"
   - name: "certificateId"
-    default: "CP-401405"
+    default: "CP-450778-Pgp"
 
 steps:
+
 - pwsh: |
     [string] $CertificateId = "${{ parameters.certificateId }}"
     Write-Verbose "CertificateId - $CertificateId" -Verbose
 
     [string] $VariableName = "EsrpJson"
 
-    $esrp = @(
-        @{
-         keyCode = $CertificateId
-         operationSetCode = "NuGetSign"
-         toolName = "sign"
-         toolVersion = "1.0"
-        }
-    )
+    [string] $SigningServer = '$(SigningServer)'
+    Write-Verbose "SigningServer - $SigningServer" -Verbose
+
+    $esrp = @(@{
+    keyCode = $CertificateId
+    operationSetCode = "LinuxSign"
+    toolName = "sign"
+    toolVersion = "1.0"
+    })
 
     $vstsCommandString = "vso[task.setvariable variable=$VariableName][$($esrp | ConvertTo-Json -Compress)]"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
@@ -31,5 +31,5 @@ steps:
     $vstsCommandString = "vso[task.setvariable variable=GDN_CODESIGN_TARGETDIRECTORY]${{ parameters.signOutputPath }}"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
-  displayName: Generate NuGet signing JSON
+  displayName: Generate PGP signing JSON
   condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
