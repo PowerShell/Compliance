@@ -5,13 +5,13 @@ parameters:
   APIScanEnable: ''
 
 steps:
-- task: securedevelopmentteam.vss-secure-development-tools.build-task-apiscan.APIScan@2
-  displayName: 'Run APIScan'
-  inputs:
-    softwareFolder: ${{ parameters.softwareFolder }}
-    softwareName: ${{ parameters.softwareName }}
-    softwareVersionNum: ${{ parameters.softwareVersion }}
-    isLargeApp: false
-    preserveTempFiles: true
-  continueOnError: true
-  condition: eq(variables['APIScanEnable'], true)
+- ${{ if eq(parameters.APIScanEnable, 'true') }}:
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-apiscan.APIScan@2
+    displayName: 'Run APIScan'
+    inputs:
+      softwareFolder: ${{ parameters.softwareFolder }}
+      softwareName: ${{ parameters.softwareName }}
+      softwareVersionNum: ${{ parameters.softwareVersion }}
+      isLargeApp: false
+      preserveTempFiles: true
+    continueOnError: true
