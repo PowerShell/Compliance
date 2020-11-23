@@ -152,6 +152,10 @@ This should be use in multi-Job builds when you are uploading unsigned binaries.
 Files are automatically scanned on signing,
 scanning on each upload will allow us to detect when any malware was introduced.
 
+This should be use in multi-Job builds when you are uploading unsigned binaries.
+Files are automatically scanned on signing,
+scanning on each upload will allow us to detect when any malware was introduced.
+
 1. Call the template from this repo in your yaml file and specify the values for the parameters.
 
 ```yaml
