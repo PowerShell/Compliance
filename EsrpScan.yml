@@ -1,6 +1,6 @@
 parameters:
   - name: "scanPath"
-    default: "$(System.ArtifactsDirectory)"
+    default: "$(Pipeline.Workspace)"
   - name: "pattern"
     default: "*.dll,*.exe"
 
@@ -13,5 +13,4 @@ steps:
     Pattern: ${{ parameters.pattern }}
     UseMinimatch: true
     SessionTimeout: 30
-
 
