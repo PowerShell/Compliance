@@ -1,0 +1,16 @@
+parameters:
+  - name: "scanPath"
+    default: "$(Pipeline.Workspace)"
+  - name: "pattern"
+    default: "*.dll,*.exe"
+
+steps:
+- task: SFP.build-tasks.custom-build-task-2.EsrpMalwareScanning@1
+  displayName: 'Malware Scanning'
+  inputs:
+    ConnectedServiceName: pwshEsrpScanning
+    FolderPath: ${{ parameters.scanPath }}
+    Pattern: ${{ parameters.pattern }}
+    UseMinimatch: true
+    SessionTimeout: 30
+

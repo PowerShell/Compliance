@@ -9,8 +9,6 @@ parameters:
     default: "*.dll,*.exe"
   - name: "useMinimatch"
     default: "false"
-  - name: "condition"
-    default: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
 
 steps:
 - task: UseDotNet@2
@@ -60,18 +58,6 @@ steps:
     Write-Verbose -Verbose "EsrpJson = '${env:EsrpJson}'"
   displayName: Log Json
 
-- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-  displayName: Sign files
-  inputs:
-    ConnectedServiceName: pwshSigning
-    FolderPath: '${{ parameters.buildOutputPath }}'
-    signConfigType: inlineSignParams
-    inlineOperation: $(EsrpJson)
-    Pattern: ${{ parameters.pattern }}
-    UseMinimatch: ${{ parameters.useMinimatch }}
-  condition: ${{ parameters.condition }}
-  timeoutInMinutes: 30
-
 - pwsh: |
     Write-Verbose "BUILD_OUTPUT_PATH- ${{ parameters.buildOutputPath }}" -Verbose
     Write-Verbose "SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }}" -Verbose
@@ -80,11 +66,28 @@ steps:
       Write-Verbose "Creating SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }}" -Verbose
       $null = New-Item -Path '${{ parameters.signOutputPath }}' -ItemType Directory -force
     }
-    $file = Get-ChildItem -Path "${{ parameters.buildOutputPath }}\codesignsummary-*.md" -File
-    $fileName = $file.Name
-    Move-Item -Path "${{ parameters.buildOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName"
-    Write-Host "##vso[artifact.upload containerfolder=signingReport;artifactname=signingReport]$(Agent.TempDirectory)\$fileName"
     Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
-  displayName: Copy signed files to signed output directory
-  condition: ${{ parameters.condition }}
+  displayName: Copy unsigned files to signed output directory
+  condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
+  timeoutInMinutes: 10
+
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  displayName: Sign files
+  inputs:
+    ConnectedServiceName: pwshSigning
+    FolderPath: '${{ parameters.signOutputPath }}'
+    signConfigType: inlineSignParams
+    inlineOperation: $(EsrpJson)
+    Pattern: ${{ parameters.pattern }}
+    UseMinimatch: ${{ parameters.useMinimatch }}
+  condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
+  timeoutInMinutes: 30
+
+- pwsh: |
+    $file = Get-ChildItem -Path "${{ parameters.signOutputPath }}\codesignsummary-*.md" -File
+    $fileName = $file.Name
+    Move-Item -Path "${{ parameters.signOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName"
+    Write-Host "##vso[artifact.upload containerfolder=signingReport;artifactname=signingReport]$(Agent.TempDirectory)\$fileName"
+  displayName: Upload codesign summary
+  condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
   timeoutInMinutes: 10
