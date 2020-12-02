@@ -57,7 +57,6 @@ steps:
 - ${{ if eq(parameters.certificateId, 'CP-401337-Apple') }}:
   - template: template-compliance/macOS-sign.yml
     parameters:
-      buildOutputPath: ${{ parameters.buildOutputPath }}
       signOutputPath: ${{ parameters.signOutputPath }}
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
