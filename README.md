@@ -142,6 +142,22 @@ This example signs `dll` `psd1` and `psm1` files recursively, using minimatch.
         useMinimatch: true
 ```
 
+### ESRP macOS example
+
+This example signs `pkg` files recursively, using minimatch.
+
+```yaml
+  - template: EsrpSign.yml@ComplianceRepo
+      parameters:
+        buildOutputPath: $(signSrcPath)
+        signOutputPath: $(signOutPath)
+        # this is the cert for macOS signing
+        certificateId: "CP-401337-Apple"
+        # this is the pattern for pkg signing
+        pattern: |
+            **\*.pkg
+        useMinimatch: true
+```
 ## ESRP Malware Scanning Template Overview
 
 ** Requires on-boarding, see the wiki in the internal PowerShell Maintainers teams channel **
