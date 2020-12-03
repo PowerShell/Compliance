@@ -54,6 +54,13 @@ steps:
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
 
+- ${{ if eq(parameters.certificateId, 'CP-401337-Apple') }}:
+  - template: template-compliance/macOS-sign.yml
+    parameters:
+      signOutputPath: ${{ parameters.signOutputPath }}
+      pattern: ${{ parameters.pattern }}
+      certificateId: ${{ parameters.certificateId }}
+
 - pwsh: |
     Write-Verbose -Verbose "EsrpJson = '${env:EsrpJson}'"
   displayName: Log Json
