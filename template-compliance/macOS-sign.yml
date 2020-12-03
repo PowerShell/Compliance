@@ -17,7 +17,7 @@ steps:
     [string] $SigningServer = '$(SigningServer)'
     Write-Verbose "SigningServer - $SigningServer" -Verbose
 
-    $esrp = @(@{
+    [hashtable[]] $esrp = @(@{
     keyCode = $CertificateId
     operationSetCode = "MacAppDeveloperSign"
     toolName = "sign"
