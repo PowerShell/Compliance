@@ -9,6 +9,8 @@ parameters:
     default: "*.dll,*.exe"
   - name: "useMinimatch"
     default: "false"
+  - name: "signingService"
+    default: "pwshSigning"
   - name: "shouldSign"
     default: "auto"
 
@@ -99,7 +101,7 @@ steps:
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
   displayName: Sign files
   inputs:
-    ConnectedServiceName: pwshSigning
+    ConnectedServiceName: ${{ parameters.signingService }}
     FolderPath: '${{ parameters.signOutputPath }}'
     signConfigType: inlineSignParams
     inlineOperation: $(EsrpJson)
