@@ -13,6 +13,8 @@ parameters:
     default: "pwshSigning"
   - name: "shouldSign"
     default: "auto"
+  - name: "alwaysCopy"
+    default: "False"
 
 steps:
 - task: UseDotNet@2
@@ -95,7 +97,7 @@ steps:
     }
     Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
   displayName: Copy unsigned files to signed output directory
-  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
+  condition: and(succeeded(), or(eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'),ne('${{ parameters.alwaysCopy }}', 'False')))
   timeoutInMinutes: 10
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
