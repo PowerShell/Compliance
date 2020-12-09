@@ -5,6 +5,11 @@ parameters:
     default: "*.dll,*.exe"
 
 steps:
+- task: UseDotNet@2
+  displayName: 'Install .NET Core sdk 2.x for ESRP'
+  inputs:
+    version: 2.x
+
 - task: SFP.build-tasks.custom-build-task-2.EsrpMalwareScanning@1
   displayName: 'Malware Scanning'
   inputs:

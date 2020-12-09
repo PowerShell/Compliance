@@ -9,6 +9,12 @@ parameters:
     default: "*.dll,*.exe"
   - name: "useMinimatch"
     default: "false"
+  - name: "signingService"
+    default: "pwshSigning"
+  - name: "shouldSign"
+    default: "auto"
+  - name: "alwaysCopy"
+    default: "False"
 
 steps:
 - task: UseDotNet@2
@@ -22,6 +28,22 @@ steps:
     Write-Verbose -Verbose "certificateId = '${{ parameters.certificateId }}'"
     Write-Verbose -Verbose "pattern = '${{ parameters.pattern }}'"
   displayName: Log parameters
+
+- pwsh: |
+    if ('${{ parameters.shouldSign }}' -eq 'auto') {
+      Write-Verbose -Verbose -Message 'calculating shouldsign'
+      $shouldSign = $env:BUILD_REASON -eq 'Manual' -and $env:SKIPSIGNING -eq 'True' -and $env:SIGNINGSERVER -ne ''
+    }
+    elseif ('${{ parameters.shouldSign }}' -eq 'false') {
+      $shouldSign = $false
+    }
+    else {
+      $shouldSign = $true
+    }
+    $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_SHOULD_SIGN]$shouldSign"
+    Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
+    Write-Host "##$vstsCommandString"
+  displayName: Set ESRP_TEMPLATE_SHOULD_SIGN
 
 - ${{ if eq(parameters.certificateId , 'CP-230012') }}:
   - template: template-compliance/authenticode-sign.yml
@@ -75,19 +97,19 @@ steps:
     }
     Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
   displayName: Copy unsigned files to signed output directory
-  condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
+  condition: and(succeeded(), or(eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'),ne('${{ parameters.alwaysCopy }}', 'False')))
   timeoutInMinutes: 10
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
   displayName: Sign files
   inputs:
-    ConnectedServiceName: pwshSigning
+    ConnectedServiceName: ${{ parameters.signingService }}
     FolderPath: '${{ parameters.signOutputPath }}'
     signConfigType: inlineSignParams
     inlineOperation: $(EsrpJson)
     Pattern: ${{ parameters.pattern }}
     UseMinimatch: ${{ parameters.useMinimatch }}
-  condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
+  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
   timeoutInMinutes: 30
 
 - pwsh: |
@@ -96,5 +118,5 @@ steps:
     Move-Item -Path "${{ parameters.signOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName"
     Write-Host "##vso[artifact.upload containerfolder=signingReport;artifactname=signingReport]$(Agent.TempDirectory)\$fileName"
   displayName: Upload codesign summary
-  condition: and(and(and(succeeded(), eq(variables['Build.Reason'], 'Manual')), ne(variables['SkipSigning'], 'True')), ne(variables['SigningServer'], ''))
+  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
   timeoutInMinutes: 10
