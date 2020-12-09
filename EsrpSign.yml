@@ -32,7 +32,7 @@ steps:
 - pwsh: |
     if ('${{ parameters.shouldSign }}' -eq 'auto') {
       Write-Verbose -Verbose -Message 'calculating shouldsign'
-      $shouldSign = $env:BUILD_REASON -eq 'Manual' -and $env:SKIPSIGNING -eq 'True' -and $env:SIGNINGSERVER -ne ''
+      $shouldSign = $env:BUILD_REASON -eq 'Manual' -and $env:SKIPSIGNING -ne 'True' -and $env:SIGNINGSERVER -ne ''
     }
     elseif ('${{ parameters.shouldSign }}' -eq 'false') {
       $shouldSign = $false
