@@ -27,6 +27,10 @@ steps:
     Write-Verbose -Verbose "signOutputPath = '${{ parameters.signOutputPath }}'"
     Write-Verbose -Verbose "certificateId = '${{ parameters.certificateId }}'"
     Write-Verbose -Verbose "pattern = '${{ parameters.pattern }}'"
+    Write-Verbose -Verbose "useMinimatch = '${{ parameters.useMinimatch }}'"
+    Write-Verbose -Verbose "signingService = '${{ parameters.signingService }}'"
+    Write-Verbose -Verbose "shouldSign = '${{ parameters.shouldSign }}'"
+    Write-Verbose -Verbose "alwaysCopy = '${{ parameters.alwaysCopy }}'"
   displayName: Log parameters
 
 - pwsh: |
