@@ -65,6 +65,14 @@ steps:
       Write-Host "$(certificateId)"
     displayName: foofoo
 
+- ${{ if eq(parameters.certificateId , 'CP-230012') }}:
+  - pwsh: |
+      Write-Host "${{ parameters.certificateId }}"
+      Write-Host "$(parameters.certificateId)"
+      Write-Host "$[parameters.certificateId]"
+      Write-Host "$(certificateId)"
+    displayName: yayyay
+
 - ${{ if eq(parameters.certificateId , 'CP-231522') }}:
   - template: template-compliance/authenticode-sign.yml
     parameters:
