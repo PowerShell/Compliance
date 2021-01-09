@@ -59,18 +59,18 @@ steps:
 
 - ${{ if ne(parameters.certificateId , 'CP-230012') }}:
   - pwsh: |
-      Write-Host "${{ parameters.certificateId }}"
-      Write-Host "$(parameters.certificateId)"
-      Write-Host "$[parameters.certificateId]"
-      Write-Host "$(certificateId)"
+      Write-Host "x2brack ${{ parameters.certificateId }}"
+      Write-Host "moneydot $(parameters.certificateId)"
+      Write-Host "box $[parameters.certificateId]"
+      Write-Host "money $(certificateId)"
     displayName: foofoo
 
 - ${{ if eq(parameters.certificateId , 'CP-230012') }}:
   - pwsh: |
-      Write-Host "${{ parameters.certificateId }}"
-      Write-Host "$(parameters.certificateId)"
-      Write-Host "$[parameters.certificateId]"
-      Write-Host "$(certificateId)"
+      Write-Host "x2brack ${{ parameters.certificateId }}"
+      Write-Host "moneydot $(parameters.certificateId)"
+      Write-Host "box $[parameters.certificateId]"
+      Write-Host "money $(certificateId)"
     displayName: yayyay
 
 - ${{ if eq(parameters.certificateId , 'CP-231522') }}:
