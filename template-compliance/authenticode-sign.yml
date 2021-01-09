@@ -10,6 +10,9 @@ parameters:
 
 steps:
 - pwsh: |
+    Write-Host "hihi"
+  displayName: in auth sign
+- pwsh: |
     [string] $CertificateId = "${{ parameters.certificateId }}"
     Write-Verbose "CertificateId - $CertificateId" -Verbose
 
