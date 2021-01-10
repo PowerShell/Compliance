@@ -50,7 +50,7 @@ steps:
   displayName: Set ESRP_TEMPLATE_SHOULD_SIGN
 
 - ${{ if eq(parameters.certificateId , 'CP-230012') }}:
-  - template: template-compliance/authenticode-sign.yml
+  - template: template-compliance/aguthenticode-sign.yml
     parameters:
       buildOutputPath: ${{ parameters.buildOutputPath }}
       signOutputPath: ${{ parameters.signOutputPath }}
