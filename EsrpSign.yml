@@ -57,14 +57,6 @@ steps:
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
 
-- ${{ if ne(parameters.certificateId , 'CP-230012') }}:
-  - pwsh: |
-      Write-Host "x2brack ${{ parameters.certificateId }}"
-      Write-Host "moneydot $(parameters.certificateId)"
-      Write-Host "box $[parameters.certificateId]"
-      Write-Host "money $(certificateId)"
-    displayName: foofoo
-
 - ${{ if eq(parameters.certificateId , 'CP-230012') }}:
   - pwsh: |
       Write-Host "x2brack ${{ parameters.certificateId }}"
@@ -72,6 +64,14 @@ steps:
       Write-Host "box $[parameters.certificateId]"
       Write-Host "money $(certificateId)"
     displayName: yayyay
+
+- ${{ if ne(parameters.certificateId , 'CP-230012') }}:
+  - pwsh: |
+      Write-Host "x2brack ${{ parameters.certificateId }}"
+      Write-Host "moneydot $(parameters.certificateId)"
+      Write-Host "box $[parameters.certificateId]"
+      Write-Host "money $(certificateId)"
+    displayName: foofoo
 
 - ${{ if eq(parameters.certificateId , 'CP-231522') }}:
   - template: template-compliance/authenticode-sign.yml
