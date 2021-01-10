@@ -58,23 +58,7 @@ steps:
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
 
-- ${{ if eq(parameters.certificateId , 'CP-230012') }}:
-  - pwsh: |
-      Write-Host "x2brack ${{ parameters.certificateId }}"
-      Write-Host "moneydot $(parameters.certificateId)"
-      Write-Host "box $[parameters.certificateId]"
-      Write-Host "money $(certificateId)"
-    displayName: yayyay
-
-- ${{ if not(contains(parameters.certificateId , 'CP-230012')) }}:
-  - pwsh: |
-      Write-Host "x2brack ${{ parameters.certificateId }}"
-      Write-Host "moneydot $(parameters.certificateId)"
-      Write-Host "box $[parameters.certificateId]"
-      Write-Host "money $(certificateId)"
-    displayName: foofoo
-
-- ${{ if eq(parameters.certificateId , 'CP-231522') }}:
+- ${{ if contains(parameters.certificateId , 'CP-231522') }}:
   - template: template-compliance/authenticode-sign.yml
     parameters:
       buildOutputPath: ${{ parameters.buildOutputPath }}
@@ -82,7 +66,7 @@ steps:
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
 
-- ${{ if eq(parameters.certificateId, 'CP-401405') }}:
+- ${{ if contains(parameters.certificateId, 'CP-401405') }}:
   - template: template-compliance/nuget-sign.yml
     parameters:
       buildOutputPath: ${{ parameters.buildOutputPath }}
@@ -97,7 +81,7 @@ steps:
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
 
-- ${{ if eq(parameters.certificateId, 'CP-401337-Apple') }}:
+- ${{ if contains(parameters.certificateId, 'CP-401337-Apple') }}:
   - template: template-compliance/macOS-sign.yml
     parameters:
       signOutputPath: ${{ parameters.signOutputPath }}
