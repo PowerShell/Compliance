@@ -49,7 +49,7 @@ steps:
     Write-Host "##$vstsCommandString"
   displayName: Set ESRP_TEMPLATE_SHOULD_SIGN
 
-- ${{ if eq(parameters.certificateId , 'CP-230012') }}:
+- ${{ if eq(${{ parameters.certificateId }} , 'CP-230012') }}:
   - template: template-compliance/aguthenticode-sign.yml
     parameters:
       buildOutputPath: ${{ parameters.buildOutputPath }}
@@ -57,7 +57,7 @@ steps:
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
 
-- ${{ if eq(parameters.certificateId , 'CP-230012') }}:
+- ${{ if eq(${{ parameters.certificateId }} , 'CP-230012') }}:
   - pwsh: |
       Write-Host "x2brack ${{ parameters.certificateId }}"
       Write-Host "moneydot $(parameters.certificateId)"
