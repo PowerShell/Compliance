@@ -7,6 +7,8 @@ parameters:
     default: "*.nupkg"
   - name: "certificateId"
     default: "CP-401405"
+  - name: "verifySignature"
+    default: "false"
 
 steps:
 - pwsh: |
@@ -15,16 +17,30 @@ steps:
 
     [string] $VariableName = "EsrpJson"
 
-    $esrp = @(
-        @{
-         keyCode = $CertificateId
-         operationSetCode = "NuGetSign"
-         toolName = "sign"
-         toolVersion = "1.0"
-        }
-    )
+    $esrp = @(@{
+      keyCode          = $CertificateId
+      operationSetCode = "NuGetSign"
+      toolName         = "sign"
+      toolVersion      = "1.0"
+    })
 
-    $vstsCommandString = "vso[task.setvariable variable=$VariableName][$($esrp | ConvertTo-Json -Compress)]"
+    if ("${{ parameters.verifySignature }}" -eq "true")
+    {
+      $esrp += @{
+        keyCode          = $CertificateId
+        operationSetCode = "NuGetVerify"
+        toolName         = "sign"
+        toolVersion      = "1.0"
+      }
+    }
+    
+    $jsonString = $($esrp | ConvertTo-Json -Depth 99 -Compress)
+    if ($esrp.Count -eq 1)
+    {
+      $jsonString = "[$jsonString]"
+    }
+    
+    $vstsCommandString = "vso[task.setvariable variable=$VariableName]$jsonString"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
 

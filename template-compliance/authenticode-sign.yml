@@ -7,6 +7,10 @@ parameters:
     default: "*.dll,*.exe"
   - name: "certificateId"
     default: "CP-230012"
+  - name: "verifySignature"
+    default: "false"
+  - name: "pageHash"
+    default: "true"
 
 steps:
 - pwsh: |
@@ -18,38 +22,43 @@ steps:
     [string] $SigningServer = '$(SigningServer)'
     Write-Verbose "SigningServer - $SigningServer" -Verbose
 
-    $esrpParameters = @(
-    @{
-        ParameterName  = "OpusName"
-        ParameterValue = "Microsoft"
+    $esrpParameters = @{
+      OpusName   = "Microsoft"
+      OpusInfo   = "http://www.microsoft.com"
+      FileDigest = "/fd sha256"
+      TimeStamp  = "/tr ""$SigningServer"" /td sha256"
     }
-    @{
-        ParameterName  = "OpusInfo"
-        ParameterValue = "http://www.microsoft.com"
+
+    if ("${{ parameters.pageHash }}" -eq "true")
+    {
+      $esrpParameters.Add("PageHash", "/NPH")
     }
-    @{
-        ParameterName  = "PageHash"
-        ParameterValue = "/NPH"
-    }
-    @{
-        ParameterName  = "FileDigest"
-        ParameterValue = "/fd sha256"
-    }
-    @{
-        ParameterName  = "TimeStamp"
-        ParameterValue = "/tr ""$SigningServer"" /td sha256"
-    }
-    )
 
     $esrp = @(@{
-    keyCode = $CertificateId
-    operationSetCode = "SigntoolSign"
-    parameters = $esrpParameters
-    toolName = "signtool.exe"
-    toolVersion = "6.2.9304.0"
+      keyCode       = $CertificateId
+      operationCode = "SigntoolSign"
+      parameters    = $esrpParameters
+      toolName      = "signtool.exe"
+      toolVersion   = "6.2.9304.0"
     })
 
-    $vstsCommandString = "vso[task.setvariable variable=$VariableName][$($esrp | ConvertTo-Json -Compress)]"
+    if ("${{ parameters.verifySignature }}" -eq "true")
+    {
+      $esrp += @{
+        keyCode       = $CertificateId
+        operationCode = "SigntoolVerify"
+        toolName      = "signtool.exe"
+        toolVersion   = "6.2.9304.0"
+        }
+    }
+
+    $jsonString = $($esrp | ConvertTo-Json -Depth 99 -Compress)
+    if ($esrp.Count -eq 1)
+    {
+      $jsonString = "[$jsonString]"
+    }
+
+    $vstsCommandString = "vso[task.setvariable variable=$VariableName]$jsonString"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
 
