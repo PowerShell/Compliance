@@ -282,7 +282,7 @@ scanning on each upload will allow us to detect when any malware was introduced.
           **\*.deb
           **\*.tar.gz
         # The name of the Azure DevOps Service connection you configured for ESRP Malware Scanning.
-        # Defaults to "pwshSigning".
+        # Defaults to "pwshEsrpScanning".
         scanningService: 'pwshEsrpScanning'
 ```
 
