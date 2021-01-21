@@ -298,6 +298,6 @@ This example uses a custom ESRP malware scanning (Azure DevOps) service name.
         certificateId: "CP-230012"
         pattern: |
           **\*.dll
-        signingService: 'pwshEsrpScanning'
+        scanningService: 'FactoryOrchestratorScanning'
 
 ```
