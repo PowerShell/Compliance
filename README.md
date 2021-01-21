@@ -101,11 +101,11 @@ Details can be found in the PowerShell Maintainers teams channel's Wiki tab.
         # If "false", ESRP is not called, files will not be signed.
         # If "auto", ESRP is called if and only certain build conditions are met.
         # Defaults to "auto".
-        shouldSign: true
+        shouldSign: 'auto'
         # If "true", your files are always copied to signOutputPath even if ESRP is not called to sign the files.
         # Useful to set to true if you want your build pipeline to behave as close to 'normal' as possible when testing and not signing.
         # Defaults to "false".
-        alwaysCopy: true
+        alwaysCopy: false
         # The name of the Azure DevOps Service connection you configured for ESRP Signing.
         # Defaults to "pwshSigning".
         signingService: 'pwshSigning'
