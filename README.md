@@ -245,8 +245,7 @@ This example uses a custom signing (Azure DevOps) service connection name.
         buildOutputPath: $(signSrcPath)
         signOutputPath: $(signOutPath)
         certificateId: "CP-230012"
-        pattern: |
-          **\*.dll
+        pattern: '*.dll'
         # The name of the Azure DevOps Service connection you configured for ESRP Signing.
         # Defaults to "pwshSigning".
         signingService: 'FactoryOrchestratorSigning'
