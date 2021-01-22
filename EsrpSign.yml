@@ -43,7 +43,7 @@ steps:
 
     if (('${{ parameters.useCustomEsrpJson }}' -ne 'false') -and ('${{ parameters.certificateId }}' -ne ''))
     {
-      Write-Error "Only one of useCustomEsrpJson and certificateId must be set!"
+      throw "Only one of useCustomEsrpJson and certificateId must be set!"
     }
   displayName: Log parameters
 
