@@ -15,6 +15,12 @@ parameters:
     default: "auto"
   - name: "alwaysCopy"
     default: "False"
+  - name: "useCustomEsrpJson"
+    default: "false"
+  - name: "verifySignature"
+    default: "false"
+  - name: "pageHash"
+    default: "true"
 
 steps:
 - task: UseDotNet@2
@@ -27,6 +33,18 @@ steps:
     Write-Verbose -Verbose "signOutputPath = '${{ parameters.signOutputPath }}'"
     Write-Verbose -Verbose "certificateId = '${{ parameters.certificateId }}'"
     Write-Verbose -Verbose "pattern = '${{ parameters.pattern }}'"
+    Write-Verbose -Verbose "useMinimatch = '${{ parameters.useMinimatch }}'"
+    Write-Verbose -Verbose "signingService = '${{ parameters.signingService }}'"
+    Write-Verbose -Verbose "shouldSign = '${{ parameters.shouldSign }}'"
+    Write-Verbose -Verbose "alwaysCopy = '${{ parameters.alwaysCopy }}'"
+    Write-Verbose -Verbose "useCustomEsrpJson = '${{ parameters.useCustomEsrpJson }}'"
+    Write-Verbose -Verbose "verifySignature = '${{ parameters.verifySignature }}'"
+    Write-Verbose -Verbose "pageHash = '${{ parameters.pageHash }}'"
+
+    if (('${{ parameters.useCustomEsrpJson }}' -ne 'false') -and ('${{ parameters.certificateId }}' -ne ''))
+    {
+      throw "Only one of useCustomEsrpJson and certificateId must be set!"
+    }
   displayName: Log parameters
 
 - pwsh: |
@@ -52,6 +70,8 @@ steps:
       signOutputPath: ${{ parameters.signOutputPath }}
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
+      verifySignature: ${{ parameters.verifySignature }}
+      pageHash: ${{ parameters.pageHash }}
 
 - ${{ if eq(parameters.certificateId , 'CP-231522') }}:
   - template: template-compliance/authenticode-sign.yml
@@ -60,6 +80,8 @@ steps:
       signOutputPath: ${{ parameters.signOutputPath }}
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
+      verifySignature: ${{ parameters.verifySignature }}
+      pageHash: ${{ parameters.pageHash }}
 
 - ${{ if eq(parameters.certificateId, 'CP-401405') }}:
   - template: template-compliance/nuget-sign.yml
@@ -68,6 +90,7 @@ steps:
       signOutputPath: ${{ parameters.signOutputPath }}
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
+      verifySignature: ${{ parameters.verifySignature }}
 
 - ${{ if or(eq(parameters.certificateId, 'CP-450779-Pgp'),eq(parameters.certificateId, 'CP-450778-Pgp')) }}:
   - template: template-compliance/pgp-sign.yml
@@ -82,6 +105,11 @@ steps:
       signOutputPath: ${{ parameters.signOutputPath }}
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
+
+- ${{ if eq(parameters.useCustomEsrpJson, 'true') }}:
+  - template: template-compliance/custom-sign.yml
+    parameters:
+      signOutputPath: ${{ parameters.signOutputPath }}
 
 - pwsh: |
     Write-Verbose -Verbose "EsrpJson = '${env:EsrpJson}'"

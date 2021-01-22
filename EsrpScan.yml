@@ -3,6 +3,8 @@ parameters:
     default: "$(Pipeline.Workspace)"
   - name: "pattern"
     default: "*.dll,*.exe"
+  - name: "scanningService"
+    default: "pwshEsrpScanning"
 
 steps:
 - task: UseDotNet@2
@@ -10,10 +12,16 @@ steps:
   inputs:
     version: 2.x
 
+- pwsh: |
+    Write-Verbose -Verbose "scanPath = '${{ parameters.scanPath }}'"
+    Write-Verbose -Verbose "pattern = '${{ parameters.pattern }}'"
+    Write-Verbose -Verbose "scanningService = '${{ parameters.scanningService }}'"
+  displayName: Log parameters
+
 - task: SFP.build-tasks.custom-build-task-2.EsrpMalwareScanning@1
   displayName: 'Malware Scanning'
   inputs:
-    ConnectedServiceName: pwshEsrpScanning
+    ConnectedServiceName: ${{ parameters.scanningService }}
     FolderPath: ${{ parameters.scanPath }}
     Pattern: ${{ parameters.pattern }}
     UseMinimatch: true
