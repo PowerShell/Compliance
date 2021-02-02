@@ -1,4 +1,5 @@
 parameters:
+  targetArgument: '$(Build.SourcesDirectory)'
   optionsRulesDBPath: ''
   optionsFTPath: ''
 
@@ -7,6 +8,7 @@ steps:
   displayName: 'Run TermCheck'
   inputs:
     targetType: F
+    targetArgument: ${{ parameters.targetArgument }}
     optionsFC: 0
     optionsXS: 0
     optionsPE: '1|2|3|4'

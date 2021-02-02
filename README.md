@@ -51,7 +51,8 @@ The following sample shows how the templates can be included in your release YAM
             sourceScanPath: '$(Build.SourcesDirectory)'
             # credscan
             suppressionsFile: ''
-            # TermCheck
+            # TermCheck AKA PoliCheck
+            targetArgument: '$(Build.SourcesDirectory)'
             optionsRulesDBPath: ''
             optionsFTPath: ''
             # tsa-upload
