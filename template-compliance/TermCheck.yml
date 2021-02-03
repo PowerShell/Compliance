@@ -10,7 +10,6 @@ steps:
     targetType: F
     targetArgument: ${{ parameters.targetArgument }}
     optionsFC: 0
-    optionsXS: 0
     optionsPE: '1|2|3|4'
     optionsHMENABLE: 0
     optionsRulesDBPath: ${{ parameters.optionsRulesDBPath }}
