@@ -11,6 +11,8 @@ parameters:
   # credscan
   suppressionsFile: ''
   # TermCheck
+  targetArgument: '$(Build.SourcesDirectory)'
+  optionsUEPATH: ''
   optionsRulesDBPath: ''
   optionsFTPath: ''
   # tsa-upload
@@ -45,6 +47,8 @@ steps:
 
 - template: template-compliance/TermCheck.yml
   parameters:
+    targetArgument: ${{ parameters.targetArgument }}
+    optionsUEPATH: ${{ parameters.optionsUEPATH }}
     optionsRulesDBPath: ${{ parameters.optionsRulesDBPath }}
     optionsFTPath: ${{ parameters.optionsFTPath }}
 
