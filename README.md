@@ -53,6 +53,7 @@ The following sample shows how the templates can be included in your release YAM
             suppressionsFile: ''
             # TermCheck AKA PoliCheck
             targetArgument: '$(Build.SourcesDirectory)'
+            optionsUEPATH: ''
             optionsRulesDBPath: ''
             optionsFTPath: ''
             # tsa-upload
@@ -60,6 +61,8 @@ The following sample shows how the templates can be included in your release YAM
             # selections
             APIScan: false # set to false when not using Windows APIs.
     ```
+
+For “TermCheck” see the [wiki](https://www.1eswiki.com/wiki/PoliCheck_Build_Task).
 
 ## ESRP Signing Template Overview
 
@@ -185,7 +188,7 @@ This example signs `pkg` files recursively, using minimatch.
 ```
 
 ### ESRP custom signing JSON example
-1. Set the build variable ESRP_TEMPLATE_CUSTOM_JSON to your desired ESRP JSON string.
+1. Set the build variable `ESRP_TEMPLATE_CUSTOM_JSON` to your desired ESRP JSON string.
 2. Call EsrpSign.yml@ComplianceRepo with certificateId: "" and useCustomEsrpJson: true.
 
 ```yaml

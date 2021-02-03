@@ -1,5 +1,6 @@
 parameters:
   targetArgument: '$(Build.SourcesDirectory)'
+  optionsUEPATH: ''
   optionsRulesDBPath: ''
   optionsFTPath: ''
 
@@ -12,6 +13,7 @@ steps:
     optionsFC: 0
     optionsPE: '1|2|3|4'
     optionsHMENABLE: 0
+    optionsUEPATH: ${{ parameters.optionsUEPATH }}
     optionsRulesDBPath: ${{ parameters.optionsRulesDBPath }}
     optionsFTPATH: ${{ parameters.optionsFTPath }}
     toolVersion: Latest
