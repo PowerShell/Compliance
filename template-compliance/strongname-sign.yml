@@ -8,7 +8,7 @@ parameters:
   - name: "certificateId"
     default: "CP-233863-SN"
   - name: "verifySignature"
-    default: "false"
+    default: "true"
   - name: "pageHash"
     default: "true"
 
