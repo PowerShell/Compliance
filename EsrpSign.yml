@@ -106,6 +106,13 @@ steps:
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
 
+- ${{ if eq(parameters.certificateId, 'CP-233863-SN') }}:
+  - template: template-compliance/strongname-sign.yml
+    parameters:
+      signOutputPath: ${{ parameters.signOutputPath }}
+      pattern: ${{ parameters.pattern }}
+      certificateId: ${{ parameters.certificateId }}
+
 - ${{ if eq(parameters.useCustomEsrpJson, 'true') }}:
   - template: template-compliance/custom-sign.yml
     parameters:
