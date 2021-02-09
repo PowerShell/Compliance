@@ -6,6 +6,7 @@ steps:
   displayName: 'Run CredScan'
   inputs:
     suppressionsFile: ${{ parameters.suppressionsFile }}
-    debugMode: false
+    debugMode: true # Required for folder suppresion
+    folderSuppression: true
     toolMajorVersion: V2
   continueOnError: true
