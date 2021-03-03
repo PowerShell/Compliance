@@ -365,3 +365,15 @@ This example uses a custom ESRP malware scanning (Azure DevOps) service name.
         scanningService: 'FactoryOrchestratorScanning'
 
 ```
+
+### Daily build Compliance template
+
+This example add the template for a daily build.
+It will automatically skip for PRs.
+It should be put near the end of the job.
+
+```yaml
+  - template: dailyBuildCompliance.yml@ComplianceRepo
+    parameters:
+      sourceScanPath: '$(repoPath)'
+```
