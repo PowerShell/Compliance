@@ -10,3 +10,8 @@ steps:
       parameters:
         sourceScanPath: '${{ parameters.sourceScanPath }}'
         snapshotForceEnabled: ${{ parameters.snapshotForceEnabled }}
+
+  - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
+    - powershell:  Write-Host "##vso[build.updatebuildnumber]$env:BUILD_SOURCEBRANCHNAME-$env:BUILD_SOURCEVERSION-$((get-date).ToString("yyyyMMddhhmmss"))"
+      displayName: Set Build Name for Non-PR
+      condition: ne(variables['Build.Reason'], 'PullRequest')
