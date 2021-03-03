@@ -1,15 +1,12 @@
 parameters:
   - name: sourceScanPath
     default: $(Build.SourcesDirectory)
-  - name: snapshotForceEnabled
-    default: true
 
 steps:
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
-    - template: template-compliance/compontentGovernance.yml
+    - template: template-compliance/component-governance.yml
       parameters:
         sourceScanPath: '${{ parameters.sourceScanPath }}'
-        snapshotForceEnabled: ${{ parameters.snapshotForceEnabled }}
 
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
     - powershell:  Write-Host "##vso[build.updatebuildnumber]$env:BUILD_SOURCEBRANCHNAME-$env:BUILD_SOURCEVERSION-$((get-date).ToString("yyyyMMddhhmmss"))"
