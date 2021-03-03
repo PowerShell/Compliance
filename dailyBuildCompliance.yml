@@ -1,0 +1,3 @@
+steps:
+  - ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+    - template: template-compliance/skipComponentGovernanceIfCI.yml

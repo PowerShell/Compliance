@@ -1,0 +1,6 @@
+steps:
+- pwsh: |
+    $vstsCommandString = "vso[task.setvariable variable=skipComponentGovernanceDetection]true"
+    Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
+    Write-Host "##$vstsCommandString"
+  displayName: Add variable to skip compontent governance

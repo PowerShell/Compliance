@@ -1,6 +1,7 @@
 # Compliance task library
 
-**Contents of this repository are intended for internal Microsoft use.**
+**Contents of this repository are intended for use in internal Microsoft Pipelines.
+This repository is public so the community can inspect our process and for sharing amoung teams.**
 
 This repository contains Azure DevOPS YAML template for the compliance tasks needed for release products.
 The step templates can be included in the repository using [multi-checkout](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops).
@@ -154,7 +155,7 @@ Details can be found in the PowerShell Maintainers teams channel's Wiki tab.
         # If "true", use a custom JSON string for ESRP signing. Defaults to "false".
         useCustomEsrpJson: false
         # If "true", ESRP will automatically verify your files are signed properly (eg signtool /verify).
-        # Only supported for authenticode & nuget signing.  
+        # Only supported for authenticode & nuget signing.
         # Defaults to "false".
         verifySignature: false
         # If "true", ESRP will page hash sign your files.
