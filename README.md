@@ -1,7 +1,7 @@
 # Compliance task library
 
 **Contents of this repository are intended for use in internal Microsoft Pipelines.
-This repository is public so the community can inspect our process and for sharing amoung teams.**
+This repository is public so the community can inspect our process and for sharing among teams.**
 
 This repository contains Azure DevOPS YAML template for the compliance tasks needed for release products.
 The step templates can be included in the repository using [multi-checkout](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops).
