@@ -9,4 +9,4 @@ steps:
     - template: template-compliance/compontentGovernance.yml
       parameters:
         sourceScanPath: '${{ parameters.sourceScanPath }}'
-        snapshotForceEnabled: '${{ parameters.snapshotForceEnabled }}
+        snapshotForceEnabled: ${{ parameters.snapshotForceEnabled }}
