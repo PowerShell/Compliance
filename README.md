@@ -1,6 +1,7 @@
 # Compliance task library
 
-**Contents of this repository are intended for internal Microsoft use.**
+**Contents of this repository are intended for use in internal Microsoft Pipelines.
+This repository is public so the community can inspect our process and for sharing among teams.**
 
 This repository contains Azure DevOPS YAML template for the compliance tasks needed for release products.
 The step templates can be included in the repository using [multi-checkout](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops).
@@ -154,7 +155,7 @@ Details can be found in the PowerShell Maintainers teams channel's Wiki tab.
         # If "true", use a custom JSON string for ESRP signing. Defaults to "false".
         useCustomEsrpJson: false
         # If "true", ESRP will automatically verify your files are signed properly (eg signtool /verify).
-        # Only supported for authenticode & nuget signing.  
+        # Only supported for authenticode & nuget signing.
         # Defaults to "false".
         verifySignature: false
         # If "true", ESRP will page hash sign your files.
@@ -363,4 +364,16 @@ This example uses a custom ESRP malware scanning (Azure DevOps) service name.
           **\*.dll
         scanningService: 'FactoryOrchestratorScanning'
 
+```
+
+### Daily build Compliance template
+
+This example add the template for a daily build.
+It will automatically skip for PRs.
+It should be put near the end of the job.
+
+```yaml
+  - template: dailyBuildCompliance.yml@ComplianceRepo
+    parameters:
+      sourceScanPath: '$(repoPath)'
 ```
