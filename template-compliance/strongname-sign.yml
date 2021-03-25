@@ -11,6 +11,8 @@ parameters:
     default: "true"
   - name: "pageHash"
     default: "true"
+  - name: "displayName"
+    default: "ESRP Signing"
 
 steps:
 - pwsh: |
@@ -53,5 +55,5 @@ steps:
     $vstsCommandString = "vso[task.setvariable variable=GDN_CODESIGN_TARGETDIRECTORY]${{ parameters.signOutputPath }}"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
-  displayName: Generate Strong Name signing JSON
+  displayName: ${{ parameters.displayName }} - Generate Strong Name signing JSON
   condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))

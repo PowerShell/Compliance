@@ -5,6 +5,8 @@ parameters:
     default: "*.rpm,*.deb"
   - name: "certificateId"
     default: "CP-450778-Pgp"
+  - name: "displayName"
+    default: "ESRP Signing"
 
 steps:
 
@@ -31,5 +33,5 @@ steps:
     $vstsCommandString = "vso[task.setvariable variable=GDN_CODESIGN_TARGETDIRECTORY]${{ parameters.signOutputPath }}"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
-  displayName: Generate PGP signing JSON
+  displayName: ${{ parameters.displayName }} - Generate PGP signing JSON
   condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))

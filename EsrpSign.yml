@@ -21,10 +21,12 @@ parameters:
     default: "false"
   - name: "pageHash"
     default: "true"
+  - name: "displayName"
+    default: "ESRP Signing"
 
 steps:
 - task: UseDotNet@2
-  displayName: 'Install .NET Core sdk 2.x for ESRP'
+  displayName: '${{ parameters.displayName }} - Install .NET Core sdk 2.x'
   inputs:
     version: 2.x
 
@@ -45,7 +47,7 @@ steps:
     {
       throw "Only one of useCustomEsrpJson and certificateId must be set!"
     }
-  displayName: Log parameters
+  displayName: ${{ parameters.displayName }} - Log parameters
 
 - pwsh: |
     if ('${{ parameters.shouldSign }}' -eq 'auto') {
@@ -61,7 +63,7 @@ steps:
     $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_SHOULD_SIGN]$shouldSign"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
-  displayName: Set ESRP_TEMPLATE_SHOULD_SIGN
+  displayName: ${{ parameters.displayName }} - Set ESRP_TEMPLATE_SHOULD_SIGN
 
 - ${{ if eq(parameters.certificateId , 'CP-230012') }}:
   - template: template-compliance/authenticode-sign.yml
@@ -72,6 +74,7 @@ steps:
       certificateId: ${{ parameters.certificateId }}
       verifySignature: ${{ parameters.verifySignature }}
       pageHash: ${{ parameters.pageHash }}
+      displayName: ${{ parameters.displayName }}
 
 - ${{ if eq(parameters.certificateId , 'CP-231522') }}:
   - template: template-compliance/authenticode-sign.yml
@@ -82,6 +85,7 @@ steps:
       certificateId: ${{ parameters.certificateId }}
       verifySignature: ${{ parameters.verifySignature }}
       pageHash: ${{ parameters.pageHash }}
+      displayName: ${{ parameters.displayName }}
 
 - ${{ if eq(parameters.certificateId, 'CP-401405') }}:
   - template: template-compliance/nuget-sign.yml
@@ -91,6 +95,7 @@ steps:
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
       verifySignature: ${{ parameters.verifySignature }}
+      displayName: ${{ parameters.displayName }}
 
 - ${{ if or(eq(parameters.certificateId, 'CP-450779-Pgp'),eq(parameters.certificateId, 'CP-450778-Pgp')) }}:
   - template: template-compliance/pgp-sign.yml
@@ -98,6 +103,7 @@ steps:
       signOutputPath: ${{ parameters.signOutputPath }}
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
+      displayName: ${{ parameters.displayName }}
 
 - ${{ if eq(parameters.certificateId, 'CP-401337-Apple') }}:
   - template: template-compliance/macOS-sign.yml
@@ -105,6 +111,7 @@ steps:
       signOutputPath: ${{ parameters.signOutputPath }}
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
+      displayName: ${{ parameters.displayName }}
 
 - ${{ if eq(parameters.certificateId, 'CP-233863-SN') }}:
   - template: template-compliance/strongname-sign.yml
@@ -112,15 +119,17 @@ steps:
       signOutputPath: ${{ parameters.signOutputPath }}
       pattern: ${{ parameters.pattern }}
       certificateId: ${{ parameters.certificateId }}
+      displayName: ${{ parameters.displayName }}
 
 - ${{ if eq(parameters.useCustomEsrpJson, 'true') }}:
   - template: template-compliance/custom-sign.yml
     parameters:
       signOutputPath: ${{ parameters.signOutputPath }}
+      displayName: ${{ parameters.displayName }}
 
 - pwsh: |
     Write-Verbose -Verbose "EsrpJson = '${env:EsrpJson}'"
-  displayName: Log Json
+  displayName: ${{ parameters.displayName }} - Log Json
 
 - pwsh: |
     Write-Verbose "BUILD_OUTPUT_PATH- ${{ parameters.buildOutputPath }}" -Verbose
@@ -131,12 +140,12 @@ steps:
       $null = New-Item -Path '${{ parameters.signOutputPath }}' -ItemType Directory -force
     }
     Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
-  displayName: Copy unsigned files to signed output directory
+  displayName: ${{ parameters.displayName }} - Copy unsigned files to signed output directory
   condition: and(succeeded(), or(eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'),ne('${{ parameters.alwaysCopy }}', 'False')))
   timeoutInMinutes: 10
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-  displayName: Sign files
+  displayName: ${{ parameters.displayName }} - Sign files
   inputs:
     ConnectedServiceName: ${{ parameters.signingService }}
     FolderPath: '${{ parameters.signOutputPath }}'
@@ -152,6 +161,6 @@ steps:
     $fileName = $file.Name
     Move-Item -Path "${{ parameters.signOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName"
     Write-Host "##vso[artifact.upload containerfolder=signingReport;artifactname=signingReport]$(Agent.TempDirectory)\$fileName"
-  displayName: Upload codesign summary
+  displayName: ${{ parameters.displayName }} - Upload codesign summary
   condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
   timeoutInMinutes: 10

@@ -9,6 +9,8 @@ parameters:
     default: "CP-401405"
   - name: "verifySignature"
     default: "false"
+  - name: "displayName"
+    default: "ESRP Signing"
 
 steps:
 - pwsh: |
@@ -33,13 +35,13 @@ steps:
         toolVersion      = "1.0"
       }
     }
-    
+
     $jsonString = $($esrp | ConvertTo-Json -Depth 99 -Compress)
     if ($esrp.Count -eq 1)
     {
       $jsonString = "[$jsonString]"
     }
-    
+
     $vstsCommandString = "vso[task.setvariable variable=$VariableName]$jsonString"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
@@ -47,5 +49,5 @@ steps:
     $vstsCommandString = "vso[task.setvariable variable=GDN_CODESIGN_TARGETDIRECTORY]${{ parameters.signOutputPath }}"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
-  displayName: Generate NuGet signing JSON
+  displayName: ${{ parameters.displayName }} - Generate NuGet signing JSON
   condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
