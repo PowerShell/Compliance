@@ -33,7 +33,7 @@ steps:
 - pwsh: |
     $displayName = "${{ parameters.displayName }}"
     if($displayName = 'Auto'){
-      $displayName = 'ESRP Siging ' + + ((get-date).ToString())
+      $displayName = 'ESRP Siging ' + ((get-date).ToString())
     }
     $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_DISPLAY_NAME]$displayName"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
