@@ -21,12 +21,24 @@ parameters:
     default: "false"
   - name: "pageHash"
     default: "true"
+  - name: "displayName"
+    default: "Auto"
 
 steps:
 - task: UseDotNet@2
   displayName: 'Install .NET Core sdk 2.x for ESRP'
   inputs:
     version: 2.x
+
+- pwsh: |
+    $displayName = "${{ parameters.displayName }}"
+    if($displayName = 'Auto'){
+      $displayName = 'ESRP Siging ' + + ((get-date).ToString())
+    }
+    $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_DISPLAY_NAME]$displayName"
+    Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
+    Write-Host "##$vstsCommandString"
+  displayName: Set displayName
 
 - pwsh: |
     Write-Verbose -Verbose "buildOutputPath = '${{ parameters.buildOutputPath }}'"
@@ -45,7 +57,7 @@ steps:
     {
       throw "Only one of useCustomEsrpJson and certificateId must be set!"
     }
-  displayName: Log parameters
+  displayName: $(ESRP_TEMPLATE_DISPLAY_NAME) - Log parameters
 
 - pwsh: |
     if ('${{ parameters.shouldSign }}' -eq 'auto') {
@@ -61,7 +73,7 @@ steps:
     $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_SHOULD_SIGN]$shouldSign"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
-  displayName: Set ESRP_TEMPLATE_SHOULD_SIGN
+  displayName: $(ESRP_TEMPLATE_DISPLAY_NAME) - Set ESRP_TEMPLATE_SHOULD_SIGN
 
 - ${{ if eq(parameters.certificateId , 'CP-230012') }}:
   - template: template-compliance/authenticode-sign.yml
@@ -120,7 +132,7 @@ steps:
 
 - pwsh: |
     Write-Verbose -Verbose "EsrpJson = '${env:EsrpJson}'"
-  displayName: Log Json
+  displayName: $(ESRP_TEMPLATE_DISPLAY_NAME) - Log Json
 
 - pwsh: |
     Write-Verbose "BUILD_OUTPUT_PATH- ${{ parameters.buildOutputPath }}" -Verbose
@@ -131,12 +143,12 @@ steps:
       $null = New-Item -Path '${{ parameters.signOutputPath }}' -ItemType Directory -force
     }
     Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
-  displayName: Copy unsigned files to signed output directory
+  displayName: $(ESRP_TEMPLATE_DISPLAY_NAME) - Copy unsigned files to signed output directory
   condition: and(succeeded(), or(eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'),ne('${{ parameters.alwaysCopy }}', 'False')))
   timeoutInMinutes: 10
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-  displayName: Sign files
+  displayName: $(ESRP_TEMPLATE_DISPLAY_NAME) - Sign files
   inputs:
     ConnectedServiceName: ${{ parameters.signingService }}
     FolderPath: '${{ parameters.signOutputPath }}'
@@ -152,6 +164,6 @@ steps:
     $fileName = $file.Name
     Move-Item -Path "${{ parameters.signOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName"
     Write-Host "##vso[artifact.upload containerfolder=signingReport;artifactname=signingReport]$(Agent.TempDirectory)\$fileName"
-  displayName: Upload codesign summary
+  displayName: $(ESRP_TEMPLATE_DISPLAY_NAME) - Upload codesign summary
   condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
   timeoutInMinutes: 10
