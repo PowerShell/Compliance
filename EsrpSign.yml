@@ -23,6 +23,8 @@ parameters:
     default: "true"
   - name: "displayName"
     default: "ESRP Signing"
+  - name: "publish"
+    default: "true"
 
 steps:
 - task: UseDotNet@2
@@ -164,3 +166,12 @@ steps:
   displayName: ${{ parameters.displayName }} - Upload codesign summary
   condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
   timeoutInMinutes: 10
+
+- ${{ if eq(parameters.publish, 'true') }}:
+  - pwsh: |
+      $container = 'esrpSign-'+[Guid]::NewGuid()
+      $folder = Get-ChildItem -Path "${{ parameters.signOutputPath }}" -Directory | select-object -expandproperty fullname
+      Write-Host "##vso[artifact.upload containerfolder=$container;artifactname=$container]$folder"
+    displayName: ${{ parameters.displayName }} - Upload signed files
+    condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
+    timeoutInMinutes: 10
