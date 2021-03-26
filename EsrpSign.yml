@@ -170,7 +170,7 @@ steps:
 - ${{ if eq(parameters.publish, 'true') }}:
   - pwsh: |
       $container = 'esrpSign-'+[Guid]::NewGuid()
-      $folder = Get-ChildItem -Path "${{ parameters.signOutputPath }}" -Directory | select-object -expandproperty fullname
+      $folder = Get-Item -Path "${{ parameters.signOutputPath }}" | select-object -expandproperty fullname
       Write-Host "##vso[artifact.upload containerfolder=$container;artifactname=$container]$folder"
     displayName: ${{ parameters.displayName }} - Upload signed files
     condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
