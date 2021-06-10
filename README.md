@@ -45,7 +45,8 @@ The following sample shows how the templates can be included in your release YAM
 1. Call the template from this repo in your yaml file and specify the values for the parameters.
 
     ```yaml
-    - template: assembly-module-compliance.yml@ComplianceRepo
+    - template: assembly-module-compliance.yml@C
+    - omplianceRepo
         parameters:
             # binskim
             AnalyzeTarget: '$(Pipeline.Workspace)/*.dll'
@@ -189,6 +190,25 @@ For full features see:  https://github.com/isaacs/minimatch#features
         buildOutputPath: $(signSrcPath)
         signOutputPath: $(signOutPath)
         certificateId: "CP-230012"
+        pattern: |
+          **\*.dll
+          *.psd1
+          **\*.psm1
+        useMinimatch: true
+```
+
+### ESRP Authenticode preview certificate
+
+This example signs `dll` and `psm1` files recursively and `psd1` files in the root of the `buildOutputPath`, using minimatch.
+
+For full features see:  https://github.com/isaacs/minimatch#features
+
+```yaml
+  - template: EsrpSign.yml@ComplianceRepo
+      parameters:
+        buildOutputPath: $(signSrcPath)
+        signOutputPath: $(signOutPath)
+        certificateId: "CP-460906"
         pattern: |
           **\*.dll
           *.psd1
