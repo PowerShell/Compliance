@@ -56,4 +56,4 @@ steps:
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
   displayName: ${{ parameters.displayName }} - Generate Strong Name signing JSON
-  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
+  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'), eq(parameters.certificateId, 'CP-233863-SN'))

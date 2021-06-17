@@ -50,4 +50,4 @@ steps:
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
   displayName: ${{ parameters.displayName }} - Generate NuGet signing JSON
-  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
+  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'), eq(parameters['certificateId'], 'CP-401405'))

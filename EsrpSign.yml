@@ -65,72 +65,65 @@ steps:
     Write-Host "##$vstsCommandString"
   displayName: ${{ parameters.displayName }} - Set ESRP_TEMPLATE_SHOULD_SIGN
 
-- ${{ if eq(parameters.certificateId , 'CP-230012') }}:
-  - template: template-compliance/authenticode-sign.yml
-    parameters:
-      buildOutputPath: ${{ parameters.buildOutputPath }}
-      signOutputPath: ${{ parameters.signOutputPath }}
-      pattern: ${{ parameters.pattern }}
-      certificateId: ${{ parameters.certificateId }}
-      verifySignature: ${{ parameters.verifySignature }}
-      pageHash: ${{ parameters.pageHash }}
-      displayName: ${{ parameters.displayName }}
+- template: template-compliance/authenticode-sign.yml
+  parameters:
+    buildOutputPath: ${{ parameters.buildOutputPath }}
+    signOutputPath: ${{ parameters.signOutputPath }}
+    pattern: ${{ parameters.pattern }}
+    certificateId: ${{ parameters.certificateId }}
+    verifySignature: ${{ parameters.verifySignature }}
+    pageHash: ${{ parameters.pageHash }}
+    displayName: ${{ parameters.displayName }}
 
-- ${{ if eq(parameters.certificateId , 'CP-460906') }}:
-  - template: template-compliance/authenticode-sign.yml
-    parameters:
-      buildOutputPath: ${{ parameters.buildOutputPath }}
-      signOutputPath: ${{ parameters.signOutputPath }}
-      pattern: ${{ parameters.pattern }}
-      certificateId: ${{ parameters.certificateId }}
-      verifySignature: ${{ parameters.verifySignature }}
-      pageHash: ${{ parameters.pageHash }}
-      displayName: ${{ parameters.displayName }}
+- template: template-compliance/authenticode-sign.yml
+  parameters:
+    buildOutputPath: ${{ parameters.buildOutputPath }}
+    signOutputPath: ${{ parameters.signOutputPath }}
+    pattern: ${{ parameters.pattern }}
+    certificateId: ${{ parameters.certificateId }}
+    verifySignature: ${{ parameters.verifySignature }}
+    pageHash: ${{ parameters.pageHash }}
+    displayName: ${{ parameters.displayName }}
 
-- ${{ if eq(parameters.certificateId , 'CP-231522') }}:
-  - template: template-compliance/authenticode-sign.yml
-    parameters:
-      buildOutputPath: ${{ parameters.buildOutputPath }}
-      signOutputPath: ${{ parameters.signOutputPath }}
-      pattern: ${{ parameters.pattern }}
-      certificateId: ${{ parameters.certificateId }}
-      verifySignature: ${{ parameters.verifySignature }}
-      pageHash: ${{ parameters.pageHash }}
-      displayName: ${{ parameters.displayName }}
+- template: template-compliance/authenticode-sign.yml
+  parameters:
+    buildOutputPath: ${{ parameters.buildOutputPath }}
+    signOutputPath: ${{ parameters.signOutputPath }}
+    pattern: ${{ parameters.pattern }}
+    certificateId: ${{ parameters.certificateId }}
+    verifySignature: ${{ parameters.verifySignature }}
+    pageHash: ${{ parameters.pageHash }}
+    displayName: ${{ parameters.displayName }}
 
-- ${{ if eq(parameters.certificateId, 'CP-401405') }}:
-  - template: template-compliance/nuget-sign.yml
-    parameters:
-      buildOutputPath: ${{ parameters.buildOutputPath }}
-      signOutputPath: ${{ parameters.signOutputPath }}
-      pattern: ${{ parameters.pattern }}
-      certificateId: ${{ parameters.certificateId }}
-      verifySignature: ${{ parameters.verifySignature }}
-      displayName: ${{ parameters.displayName }}
+- template: template-compliance/nuget-sign.yml
+  parameters:
+    buildOutputPath: ${{ parameters.buildOutputPath }}
+    signOutputPath: ${{ parameters.signOutputPath }}
+    pattern: ${{ parameters.pattern }}
+    certificateId: ${{ parameters.certificateId }}
+    verifySignature: ${{ parameters.verifySignature }}
+    displayName: ${{ parameters.displayName }}
 
-- ${{ if or(eq(parameters.certificateId, 'CP-450779-Pgp'),eq(parameters.certificateId, 'CP-450778-Pgp')) }}:
-  - template: template-compliance/pgp-sign.yml
-    parameters:
-      signOutputPath: ${{ parameters.signOutputPath }}
-      pattern: ${{ parameters.pattern }}
-      certificateId: ${{ parameters.certificateId }}
-      displayName: ${{ parameters.displayName }}
+- template: template-compliance/pgp-sign.yml
+  parameters:
+    signOutputPath: ${{ parameters.signOutputPath }}
+    pattern: ${{ parameters.pattern }}
+    certificateId: ${{ parameters.certificateId }}
+    displayName: ${{ parameters.displayName }}
 
-- ${{ if eq(parameters.certificateId, 'CP-401337-Apple') }}:
-  - template: template-compliance/macOS-sign.yml
-    parameters:
-      signOutputPath: ${{ parameters.signOutputPath }}
-      pattern: ${{ parameters.pattern }}
-      certificateId: ${{ parameters.certificateId }}
-      displayName: ${{ parameters.displayName }}
+- template: template-compliance/macOS-sign.yml
+  parameters:
+    signOutputPath: ${{ parameters.signOutputPath }}
+    pattern: ${{ parameters.pattern }}
+    certificateId: ${{ parameters.certificateId }}
+    displayName: ${{ parameters.displayName }}
 
-- ${{ if eq(parameters.certificateId, 'CP-233863-SN') }}:
-  - template: template-compliance/strongname-sign.yml
-    parameters:
-      signOutputPath: ${{ parameters.signOutputPath }}
-      pattern: ${{ parameters.pattern }}
-      certificateId: ${{ parameters.certificateId }}
-      displayName: ${{ parameters.displayName }}
+- template: template-compliance/strongname-sign.yml
+  parameters:
+    signOutputPath: ${{ parameters.signOutputPath }}
+    pattern: ${{ parameters.pattern }}
+    certificateId: ${{ parameters.certificateId }}
+    displayName: ${{ parameters.displayName }}
 
 - ${{ if eq(parameters.useCustomEsrpJson, 'true') }}:
   - template: template-compliance/custom-sign.yml

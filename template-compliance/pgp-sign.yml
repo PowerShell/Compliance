@@ -34,4 +34,4 @@ steps:
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
   displayName: ${{ parameters.displayName }} - Generate PGP signing JSON
-  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
+  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'), or(eq(parameters.certificateId, 'CP-450779-Pgp'),eq(parameters.certificateId, 'CP-450778-Pgp')))
