@@ -8,6 +8,10 @@ parameters:
   - name: "displayName"
     default: "ESRP Signing"
 
+variables:
+- name: "certId"
+  value: ${{ parameters.certificateId }}
+
 steps:
 
 - pwsh: |
@@ -34,4 +38,4 @@ steps:
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
   displayName: ${{ parameters.displayName }} - Generate PGP signing JSON
-  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'), eq(parameters.certificateId, 'CP-401337-Apple'))
+  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'), eq(variables['certId'], 'CP-401337-Apple'))
