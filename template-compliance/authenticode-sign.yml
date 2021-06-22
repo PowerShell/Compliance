@@ -14,6 +14,10 @@ parameters:
   - name: "displayName"
     default: "ESRP Signing"
 
+variables:
+  - name: CERT_ID
+    value: $[parameters.certificateId]
+
 steps:
 - pwsh: |
     [string] $CertificateId = "${{ parameters.certificateId }}"
@@ -68,4 +72,4 @@ steps:
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
   displayName: ${{ parameters.displayName }} - Generate Authenticode signing JSON
-  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'), or( eq('${{ parameters.certificateId }}', 'CP-230012'), eq('${{ parameters.certificateId }}', 'CP-460906'), eq('${{ parameters.certificateId }}', 'CP-231522') ))
+  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'), or( eq(variables['CERT_ID'], 'CP-230012'), eq(variables['CERT_ID'], 'CP-460906'), eq(variables['CERT_ID'], 'CP-231522') ))
