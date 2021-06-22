@@ -47,6 +47,11 @@ steps:
     {
       throw "Only one of useCustomEsrpJson and certificateId must be set!"
     }
+
+    $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_CERT_ID]${{ parameters.certificateId }}"
+    Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
+    Write-Host "##$vstsCommandString"
+
   displayName: ${{ parameters.displayName }} - Log parameters
 
 - pwsh: |
