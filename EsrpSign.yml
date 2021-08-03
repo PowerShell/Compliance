@@ -80,26 +80,6 @@ steps:
     pageHash: ${{ parameters.pageHash }}
     displayName: ${{ parameters.displayName }}
 
-- template: template-compliance/authenticode-sign.yml
-  parameters:
-    buildOutputPath: ${{ parameters.buildOutputPath }}
-    signOutputPath: ${{ parameters.signOutputPath }}
-    pattern: ${{ parameters.pattern }}
-    certificateId: ${{ parameters.certificateId }}
-    verifySignature: ${{ parameters.verifySignature }}
-    pageHash: ${{ parameters.pageHash }}
-    displayName: ${{ parameters.displayName }}
-
-- template: template-compliance/authenticode-sign.yml
-  parameters:
-    buildOutputPath: ${{ parameters.buildOutputPath }}
-    signOutputPath: ${{ parameters.signOutputPath }}
-    pattern: ${{ parameters.pattern }}
-    certificateId: ${{ parameters.certificateId }}
-    verifySignature: ${{ parameters.verifySignature }}
-    pageHash: ${{ parameters.pageHash }}
-    displayName: ${{ parameters.displayName }}
-
 - template: template-compliance/nuget-sign.yml
   parameters:
     buildOutputPath: ${{ parameters.buildOutputPath }}
