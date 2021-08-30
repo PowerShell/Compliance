@@ -24,8 +24,6 @@ steps:
   parameters:
     suppressionsFile: ${{ parameters.suppressionsFile }}
 
-- template: template-compliance/defender.yml
-
 - template: template-compliance/TermCheck.yml
   parameters:
     targetArgument: ${{ parameters.targetArgument }}
