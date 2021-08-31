@@ -3,6 +3,8 @@ parameters:
   optionsUEPATH: ''
   optionsRulesDBPath: ''
   optionsFTPath: ''
+  # Recurse: 1- yes, 0- no
+  optionsXS: 1
 
 steps:
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-policheck.PoliCheck@1
@@ -17,4 +19,5 @@ steps:
     optionsRulesDBPath: ${{ parameters.optionsRulesDBPath }}
     optionsFTPATH: ${{ parameters.optionsFTPath }}
     toolVersion: Latest
+    optionsXS: ${{ parameters.optionsXS }}
   continueOnError: true
