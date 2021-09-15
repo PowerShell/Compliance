@@ -2,6 +2,7 @@ parameters:
   softwareFolder: ''
   softwareName: ''
   softwareVersion: ''
+  connectionString: ''
   APIScanEnable: ''
 
 steps:
@@ -14,4 +15,6 @@ steps:
       softwareVersionNum: ${{ parameters.softwareVersion }}
       isLargeApp: false
       preserveTempFiles: true
+    env:
+      AzureServicesAuthConnectionString: ${{ parameters.connectionString }}
     continueOnError: true

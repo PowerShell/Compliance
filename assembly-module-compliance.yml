@@ -3,6 +3,7 @@ parameters:
   softwareFolder: ''
   softwareName: ''
   softwareVersion: ''
+  connectionString: ''
   # binskim
   AnalyzeTarget: ''
   AnalyzeSymPath: 'SRV*'
@@ -26,6 +27,7 @@ steps:
     softwareFolder: ${{ parameters.softwareFolder }}
     softwareName: ${{ parameters.softwareName }}
     softwareVersion: ${{ parameters.softwareVersion }}
+    connectionString: ${{ parameters.connectionString }}
     APIScanEnable: ${{ parameters.APIScan }}
 
 - template: template-compliance/auto-applicability.yml
