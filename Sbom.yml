@@ -1,0 +1,21 @@
+parameters:
+  - name: "BuildDropPath"
+    default: '$(System.ArtifactsDirectory)'
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Install .NET Core sdk 3.1 for SBom Generator'
+  inputs:
+    version: 3.1
+
+- task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+  displayName: 'Generate SBOM'
+  inputs:
+    BuildDropPath: ${{ parameters.BuildDropPath }}
+    # *** Leaving these as documentation of the rest of the inputs ***
+    # These should be implemented as needed with backwards compatibility for user that didn't supply the parameters
+    #
+    # this is the folder to put the BOM, defaults to _manifest
+    # ManifestDirPath: '_manifest'
+    # configuration json for the tool
+    # ConfigFilePath: config.json
