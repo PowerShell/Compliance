@@ -6,7 +6,7 @@ steps:
 - task: UseDotNet@2
   displayName: 'Install .NET Core sdk 3.1 for SBom Generator'
   inputs:
-    version: 3.1
+    version: 3.x
 
 - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
   displayName: 'Generate SBOM'
