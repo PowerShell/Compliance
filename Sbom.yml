@@ -3,15 +3,24 @@ parameters:
     default: '$(System.ArtifactsDirectory)'
   # Use the public repo URL, such as `https://github.com/powershell/powershell`
   - name: Build_Repository_Uri
+  - name: "displayName"
+    default: "SBOM"
+
 
 steps:
 - task: UseDotNet@2
-  displayName: 'Install .NET Core sdk 3.1 for SBom Generator'
+  displayName: '${{ parameters.displayName }} - Install .NET Core sdk 3.x'
   inputs:
     version: 3.x
 
+- pwsh: |
+    Get-ChildItem env:
+  displayName: '${{ parameters.displayName }} - Capture Environment'
+  env:
+    Build.Repository.Uri: ${{ parameters.Build_Repository_Uri }}
+
 - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-  displayName: 'Generate SBOM'
+  displayName: '${{ parameters.displayName }} - Generate'
   inputs:
     BuildDropPath: ${{ parameters.BuildDropPath }}
     # *** Leaving these as documentation of the rest of the inputs ***
@@ -22,4 +31,4 @@ steps:
     # configuration json for the tool
     # ConfigFilePath: config.json
   env:
-    Build_Repository_Uri: ${{ parameters.Build_Repository_Uri }}
+    Build.Repository.Uri: ${{ parameters.Build_Repository_Uri }}
