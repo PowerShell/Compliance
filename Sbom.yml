@@ -1,6 +1,8 @@
 parameters:
   - name: "BuildDropPath"
     default: '$(System.ArtifactsDirectory)'
+  # Use the public repo URL, such as `https://github.com/powershell/powershell`
+  - name: Build_Repository_Uri
 
 steps:
 - task: UseDotNet@2
@@ -19,3 +21,5 @@ steps:
     # ManifestDirPath: '_manifest'
     # configuration json for the tool
     # ConfigFilePath: config.json
+  env:
+    Build_Repository_Uri: ${{ parameters.Build_Repository_Uri }}
