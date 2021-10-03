@@ -42,6 +42,4 @@ steps:
     $manifest.Repo = '${{ parameters.Build_Repository_Uri}}'
     Write-Verbose "newRepo: $($manifest.Repo)" -verbose
     $manifest | convertto-json -Compress | Out-File -FilePath $manifestPath -Force
-    $newManifest = Get-Content $manifestPath
-    Write-Verbose "newManifest: $manifestPath" -verbose
   displayName: '${{ parameters.displayName }} - Fix repo'
