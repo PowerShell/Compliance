@@ -32,3 +32,16 @@ steps:
     # ConfigFilePath: config.json
   env:
     Build.Repository.Uri: ${{ parameters.Build_Repository_Uri }}
+
+# This will break signing, but it is currently not enabled.
+- pwsh: |
+    $manifestPath = Join-Path '${{ parameters.BuildDropPath }}' -ChildPath '_manifest\manifest.json'
+    Write-Verbose "manifestPath: $manifestPath" -verbose
+    $manifest = Get-Content $manifestPath | ConvertFrom-Json
+    Write-Verbose "oldRepo: $($manifest.Repo)" -verbose
+    $manifest.Repo = '${{ parameters.Build_Repository_Uri}}'
+    Write-Verbose "newRepo: $($manifest.Repo)" -verbose
+    $manifest | convertto-json -Compress | Out-File -FilePath $manifestPath -Force
+    $newManifest = Get-Content $manifestPath
+    Write-Verbose "newManifest: $manifestPath" -verbose
+  displayName: '${{ parameters.displayName }} - Fix repo'
