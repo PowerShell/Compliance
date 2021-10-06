@@ -1,10 +1,30 @@
-# Compliance task library
+# Compliance task library <!-- omit in toc -->
 
 **Contents of this repository are intended for use in internal Microsoft Pipelines.
 This repository is public so the community can inspect our process and for sharing among teams.**
 
 This repository contains Azure DevOPS YAML template for the compliance tasks needed for release products.
 The step templates can be included in the repository using [multi-checkout](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops).
+
+## Table of Contents <!-- omit in toc -->
+<!-- Used https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one to generate TOC-->
+
+- [Template setup](#template-setup)
+- [Daily build Compliance template](#daily-build-compliance-template)
+- [Task templates](#task-templates)
+  - [Credential Scanner](#credential-scanner)
+  - [TermCheck AKA PoliCheck](#termcheck-aka-policheck)
+  - [ESRP Signing Template Overview](#esrp-signing-template-overview)
+    - [ESRP Authenticode minimatch example](#esrp-authenticode-minimatch-example)
+    - [ESRP Authenticode preview certificate](#esrp-authenticode-preview-certificate)
+    - [ESRP RPM example](#esrp-rpm-example)
+    - [ESRP NuPkg example](#esrp-nupkg-example)
+    - [ESRP macOS example](#esrp-macos-example)
+    - [ESRP custom signing JSON example](#esrp-custom-signing-json-example)
+    - [ESRP Custom Signing Service Connection Example](#esrp-custom-signing-service-connection-example)
+    - [ESRP Malware Scanning Template Overview](#esrp-malware-scanning-template-overview)
+    - [ESRP Scanning Custom Service Example](#esrp-scanning-custom-service-example)
+  - [Software Bill Of Materials (SBOM or Manifest) template](#software-bill-of-materials-sbom-or-manifest-template)
 
 ## Template setup
 
@@ -66,6 +86,20 @@ The following sample shows how the templates can be included in your release YAM
             APIScan: false # set to false when not using Windows APIs.
     ```
 
+## Daily build Compliance template
+
+This example add the template for a daily build.
+It will automatically skip for PRs.
+It should be put near the end of the job.
+
+```yaml
+  - template: dailyBuildCompliance.yml@ComplianceRepo
+    parameters:
+      sourceScanPath: '$(repoPath)'
+```
+
+## Task templates
+
 ### Credential Scanner
 
 The Credential Scanner can be configured to ignore paths (including folders),
@@ -126,9 +160,9 @@ specified with the "or" operator: `|`, not with multiple XML tags.
 See the internal [wiki](https://www.1eswiki.com/wiki/PoliCheck_Build_Task) for
 more information about this ADO task.
 
-## ESRP Signing Template Overview
+### ESRP Signing Template Overview
 
-** Requires on-boarding, see the wiki in the internal PowerShell Maintainers teams channel **
+**Requires on-boarding**, see the wiki in the internal PowerShell Maintainers teams channel.
 
 Make sure to create the variable group named `ESRP` and make it available to the pipeline.
 Details can be found in the PowerShell Maintainers teams channel's Wiki tab.
@@ -178,7 +212,7 @@ Details can be found in the PowerShell Maintainers teams channel's Wiki tab.
 
 ```
 
-### ESRP Authenticode minimatch example
+#### ESRP Authenticode minimatch example
 
 This example signs `dll` and `psm1` files recursively and `psd1` files in the root of the `buildOutputPath`, using minimatch.
 
@@ -197,7 +231,7 @@ For full features see:  https://github.com/isaacs/minimatch#features
         useMinimatch: true
 ```
 
-### ESRP Authenticode preview certificate
+#### ESRP Authenticode preview certificate
 
 This example signs `dll` and `psm1` files recursively and `psd1` files in the root of the `buildOutputPath`, using minimatch.
 
@@ -216,7 +250,7 @@ For full features see:  https://github.com/isaacs/minimatch#features
         useMinimatch: true
 ```
 
-### ESRP RPM example
+#### ESRP RPM example
 
 This example signs `dll` `psd1` and `psm1` files recursively, using minimatch.
 
@@ -233,8 +267,7 @@ This example signs `dll` `psd1` and `psm1` files recursively, using minimatch.
         useMinimatch: true
 ```
 
-
-### ESRP NuPkg example
+#### ESRP NuPkg example
 
 This example signs `dll` `psd1` and `psm1` files recursively, using minimatch.
 
@@ -251,7 +284,7 @@ This example signs `dll` `psd1` and `psm1` files recursively, using minimatch.
         useMinimatch: true
 ```
 
-### ESRP macOS example
+#### ESRP macOS example
 
 This example signs `pkg` files recursively, using minimatch.
 
@@ -268,7 +301,8 @@ This example signs `pkg` files recursively, using minimatch.
         useMinimatch: true
 ```
 
-### ESRP custom signing JSON example
+#### ESRP custom signing JSON example
+
 1. Set the build variable `ESRP_TEMPLATE_CUSTOM_JSON` to your desired ESRP JSON string.
 2. Call EsrpSign.yml@ComplianceRepo with certificateId: "" and useCustomEsrpJson: true.
 
@@ -320,7 +354,7 @@ This example signs `pkg` files recursively, using minimatch.
         useCustomEsrpJson: true
 ```
 
-### ESRP Custom Signing Service Connection Example
+#### ESRP Custom Signing Service Connection Example
 
 This example uses a custom signing (Azure DevOps) service connection name.
 
@@ -337,9 +371,9 @@ This example uses a custom signing (Azure DevOps) service connection name.
 
 ```
 
-## ESRP Malware Scanning Template Overview
+#### ESRP Malware Scanning Template Overview
 
-** Requires on-boarding, see the wiki in the internal PowerShell Maintainers teams channel **
+**Requires on-boarding**, see the wiki in the internal PowerShell Maintainers teams channel.
 
 Details can be found in the PowerShell Maintainers teams channel's Wiki tab.
 
@@ -370,7 +404,7 @@ scanning on each upload will allow us to detect when any malware was introduced.
         scanningService: 'pwshEsrpScanning'
 ```
 
-### ESRP Scanning Custom Service Example
+#### ESRP Scanning Custom Service Example
 
 This example uses a custom ESRP malware scanning (Azure DevOps) service name.
 
@@ -386,14 +420,15 @@ This example uses a custom ESRP malware scanning (Azure DevOps) service name.
 
 ```
 
-### Daily build Compliance template
+### Software Bill Of Materials (SBOM or Manifest) template
 
-This example add the template for a daily build.
-It will automatically skip for PRs.
-It should be put near the end of the job.
+This should be done after the build is done and all files are generated,
+but you have not packaged yet.
 
 ```yaml
-  - template: dailyBuildCompliance.yml@ComplianceRepo
+  - template: Sbom.yml@ComplianceRepo
     parameters:
-      sourceScanPath: '$(repoPath)'
+      BuildDropPath: '$(System.ArtifactsDirectory)/dotnetPublishOutput'
+      Build_Repository_Uri: 'https://github.com/powershell/powershell.git'
+      displayName: PowerShell SBOM
 ```
