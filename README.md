@@ -22,7 +22,7 @@ The step templates can be included in the repository using [multi-checkout](http
     - [ESRP macOS example](#esrp-macos-example)
     - [ESRP custom signing JSON example](#esrp-custom-signing-json-example)
     - [ESRP Custom Signing Service Connection Example](#esrp-custom-signing-service-connection-example)
-    - [ESRP Malware Scanning Template Overview](#esrp-malware-scanning-template-overview)
+  - [ESRP Malware Scanning Template Overview](#esrp-malware-scanning-template-overview)
     - [ESRP Scanning Custom Service Example](#esrp-scanning-custom-service-example)
   - [Software Bill Of Materials (SBOM or Manifest) template](#software-bill-of-materials-sbom-or-manifest-template)
 
@@ -371,7 +371,7 @@ This example uses a custom signing (Azure DevOps) service connection name.
 
 ```
 
-#### ESRP Malware Scanning Template Overview
+### ESRP Malware Scanning Template Overview
 
 **Requires on-boarding**, see the wiki in the internal PowerShell Maintainers teams channel.
 
