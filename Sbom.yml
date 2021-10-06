@@ -1,0 +1,42 @@
+parameters:
+  - name: "BuildDropPath"
+    default: '$(System.ArtifactsDirectory)'
+  # Use the public repo URL, such as `https://github.com/powershell/powershell`
+  - name: Build_Repository_Uri
+  - name: "displayName"
+    default: "SBOM"
+
+
+steps:
+- task: UseDotNet@2
+  displayName: '${{ parameters.displayName }} - Install .NET Core sdk 3.x'
+  inputs:
+    version: 3.x
+
+- pwsh: |
+    Get-ChildItem env:
+  displayName: '${{ parameters.displayName }} - Capture Environment'
+  env:
+    Build.Repository.Uri: ${{ parameters.Build_Repository_Uri }}
+
+- task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+  displayName: '${{ parameters.displayName }} - Generate'
+  inputs:
+    BuildDropPath: ${{ parameters.BuildDropPath }}
+    # *** Leaving these as documentation of the rest of the inputs ***
+    # These should be implemented as needed with backwards compatibility for user that didn't supply the parameters
+    #
+    # this is the folder to put the BOM, defaults to _manifest
+    # ManifestDirPath: '_manifest'
+    # configuration json for the tool
+    # ConfigFilePath: config.json
+# This will break signing, but it is currently not enabled.
+- pwsh: |
+    $manifestPath = Join-Path '${{ parameters.BuildDropPath }}' -ChildPath '_manifest\manifest.json'
+    Write-Verbose "manifestPath: $manifestPath" -verbose
+    $manifest = Get-Content $manifestPath | ConvertFrom-Json
+    Write-Verbose "oldRepo: $($manifest.Repo)" -verbose
+    $manifest.Repo = '${{ parameters.Build_Repository_Uri}}'
+    Write-Verbose "newRepo: $($manifest.Repo)" -verbose
+    $manifest | convertto-json -Compress | Out-File -FilePath $manifestPath -Force
+  displayName: '${{ parameters.displayName }} - Fix repo'
