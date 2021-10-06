@@ -30,9 +30,6 @@ steps:
     # ManifestDirPath: '_manifest'
     # configuration json for the tool
     # ConfigFilePath: config.json
-  env:
-    Build.Repository.Uri: ${{ parameters.Build_Repository_Uri }}
-
 # This will break signing, but it is currently not enabled.
 - pwsh: |
     $manifestPath = Join-Path '${{ parameters.BuildDropPath }}' -ChildPath '_manifest\manifest.json'
