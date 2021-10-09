@@ -148,8 +148,25 @@ steps:
 - pwsh: |
     $file = Get-ChildItem -Path "${{ parameters.signOutputPath }}\codesignsummary-*.md" -File
     $fileName = $file.Name
-    Move-Item -Path "${{ parameters.signOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName"
-    Write-Host "##vso[artifact.upload containerfolder=signingReport;artifactname=signingReport]$(Agent.TempDirectory)\$fileName"
+    $retryCount = 0
+    $maxTries = 5
+    while($retryCount -lt $maxTries)
+    {
+      try {
+        Move-Item -Path "${{ parameters.signOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName" -ErrorAction Stop
+        Write-Host "##vso[artifact.upload containerfolder=signingReport;artifactname=signingReport]$(Agent.TempDirectory)\$fileName"
+      }
+      catch {
+        Write-Log -message "Failed to move ${{ parameters.signOutputPath }}\$fileName, retrying..."
+        $retryCount++
+        if($retryCount -ge $maxTries)
+        {
+          Start-Sleep -Seconds ($retryCount * 5)
+          throw
+        }
+        continue
+      }
+    }
   displayName: ${{ parameters.displayName }} - Upload codesign summary
   condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
   timeoutInMinutes: 10
