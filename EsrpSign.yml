@@ -157,7 +157,7 @@ steps:
         Write-Host "##vso[artifact.upload containerfolder=signingReport;artifactname=signingReport]$(Agent.TempDirectory)\$fileName"
       }
       catch {
-        Write-Log -message "Failed to move ${{ parameters.signOutputPath }}\$fileName, retrying..."
+        Write-Verbose -message "Failed to move ${{ parameters.signOutputPath }}\$fileName, retrying..." -Verbose
         $retryCount++
         if($retryCount -ge $maxTries)
         {
