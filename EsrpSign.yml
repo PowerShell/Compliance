@@ -153,7 +153,7 @@ steps:
     while($retryCount -lt $maxTries)
     {
       try {
-        Move-Item -Path "${{ parameters.signOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName" -ErrorAction Stop
+        Move-Item -Path "${{ parameters.signOutputPath }}\$fileName" -Dest "$(Agent.TempDirectory)\$fileName" -Force -ErrorAction Stop
         Write-Verbose "Moved ${{ parameters.signOutputPath }}\$fileName" -Verbose
         Write-Host "##vso[artifact.upload containerfolder=signingReport;artifactname=signingReport]$(Agent.TempDirectory)\$fileName"
       }
