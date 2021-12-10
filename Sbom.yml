@@ -7,7 +7,10 @@ parameters:
     default: "SBOM"
   - name: "SBOMGenerator_Formats"
     default: "spdx:2.2"
-
+  - name: PackageName
+  - name: PackageVersion
+  - name: sourceScanPath
+    default: '$(Build.SourcesDirectory)'
 
 steps:
 - task: UseDotNet@2
@@ -22,10 +25,16 @@ steps:
     Build.Repository.Uri: ${{ parameters.Build_Repository_Uri }}
     SBOMGenerator_Formats: '${{ parameters.SBOMGenerator_Formats }}'
 
+- template: template-compliance/component-governance.yml
+  parameters:
+    sourceScanPath: ${{ parameters.sourceScanPath }}
+
 - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
   displayName: '${{ parameters.displayName }} - Generate'
   inputs:
     BuildDropPath: ${{ parameters.BuildDropPath }}
+    PackageName: ${{ parameters.PackageName }}
+    PackageVersion: ${{ parameters.PackageVersion }}
   env:
     SBOMGenerator_Formats: '${{ parameters.SBOMGenerator_Formats }}'
     # *** Leaving these as documentation of the rest of the inputs ***
