@@ -10,9 +10,7 @@ parameters:
   - name: PackageName
   - name: PackageVersion
   - name: sourceScanPath
-    default: '$(Build.SourcesDirectory)'
-  - name: BuildComponentPath
-    default: '$(Build.SourcesDirectory)'
+    default: '$(Build.SourcesDirectory)''
 
 steps:
 - task: UseDotNet@2
@@ -37,7 +35,7 @@ steps:
     BuildDropPath: ${{ parameters.BuildDropPath }}
     PackageName: ${{ parameters.PackageName }}
     PackageVersion: ${{ parameters.PackageVersion }}
-    BuildComponentPath: ${{ parameters.BuildComponentPath }}
+    BuildComponentPath: ${{ parameters.sourceScanPath }}
   env:
     SBOMGenerator_Formats: '${{ parameters.SBOMGenerator_Formats }}'
     # *** Leaving these as documentation of the rest of the inputs ***
