@@ -24,6 +24,7 @@ steps:
   env:
     Build.Repository.Uri: ${{ parameters.Build_Repository_Uri }}
     SBOMGenerator_Formats: '${{ parameters.SBOMGenerator_Formats }}'
+    sourceScanPath: ${{ parameters.sourceScanPath }}
 
 - template: template-compliance/component-governance.yml
   parameters:
