@@ -11,6 +11,8 @@ parameters:
   - name: PackageVersion
   - name: sourceScanPath
     default: '$(Build.SourcesDirectory)'
+  - name: BuildComponentPath
+    default: '$(Build.SourcesDirectory)'
 
 steps:
 - task: UseDotNet@2
@@ -35,13 +37,14 @@ steps:
     BuildDropPath: ${{ parameters.BuildDropPath }}
     PackageName: ${{ parameters.PackageName }}
     PackageVersion: ${{ parameters.PackageVersion }}
+    BuildComponentPath: ${{ parameters.BuildComponentPath }}
   env:
     SBOMGenerator_Formats: '${{ parameters.SBOMGenerator_Formats }}'
     # *** Leaving these as documentation of the rest of the inputs ***
     # These should be implemented as needed with backwards compatibility for user that didn't supply the parameters
     #
-    # this is the folder to put the BOM, defaults to _manifest
-    # ManifestDirPath: '_manifest'
+    # this is the folder to put the BOM, defaults to ${{ parameters.BuildDropPath }}
+    # ManifestDirPath: ${{ parameters.BuildDropPath }}
     # configuration json for the tool
     # ConfigFilePath: config.json
 # This will break signing, but it is currently not enabled.
