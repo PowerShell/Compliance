@@ -10,7 +10,7 @@ parameters:
   - name: PackageName
   - name: PackageVersion
   - name: sourceScanPath
-    default: '$(Build.SourcesDirectory)''
+    default: '$(Build.SourcesDirectory)'
 
 steps:
 - task: UseDotNet@2
