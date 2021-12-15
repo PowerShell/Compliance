@@ -26,10 +26,6 @@ steps:
     SBOMGenerator_Formats: '${{ parameters.SBOMGenerator_Formats }}'
     sourceScanPath: ${{ parameters.sourceScanPath }}
 
-- template: template-compliance/component-governance.yml
-  parameters:
-    sourceScanPath: ${{ parameters.sourceScanPath }}
-
 - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
   displayName: '${{ parameters.displayName }} - Generate'
   inputs:
