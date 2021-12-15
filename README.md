@@ -431,4 +431,9 @@ but you have not packaged yet.
       BuildDropPath: '$(System.ArtifactsDirectory)/dotnetPublishOutput'
       Build_Repository_Uri: 'https://github.com/powershell/powershell.git'
       displayName: PowerShell SBOM
+      packageName: PowerShell Windows x64
+      packageVersion: 7.2.1
+      # Optional - Path to scan for components or CGManifest.json
+      # Same as source scan path for Component Governance
+      # sourceScanPath: <folderPath>
 ```
