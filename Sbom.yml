@@ -1,13 +1,16 @@
 parameters:
-  - name: "BuildDropPath"
-    default: '$(System.ArtifactsDirectory)'
+  - name: BuildDropPath
+    default: $(System.ArtifactsDirectory)
   # Use the public repo URL, such as `https://github.com/powershell/powershell`
   - name: Build_Repository_Uri
-  - name: "displayName"
-    default: "SBOM"
-  - name: "SBOMGenerator_Formats"
-    default: "spdx:2.2"
-
+  - name: displayName
+    default: SBOM
+  - name: SBOMGenerator_Formats
+    default: spdx:2.2
+  - name: PackageName
+  - name: PackageVersion
+  - name: sourceScanPath
+    default: $(Build.SourcesDirectory)
 
 steps:
 - task: UseDotNet@2
@@ -21,18 +24,22 @@ steps:
   env:
     Build.Repository.Uri: ${{ parameters.Build_Repository_Uri }}
     SBOMGenerator_Formats: '${{ parameters.SBOMGenerator_Formats }}'
+    sourceScanPath: ${{ parameters.sourceScanPath }}
 
 - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
   displayName: '${{ parameters.displayName }} - Generate'
   inputs:
     BuildDropPath: ${{ parameters.BuildDropPath }}
+    PackageName: ${{ parameters.PackageName }}
+    PackageVersion: ${{ parameters.PackageVersion }}
+    BuildComponentPath: ${{ parameters.sourceScanPath }}
   env:
     SBOMGenerator_Formats: '${{ parameters.SBOMGenerator_Formats }}'
     # *** Leaving these as documentation of the rest of the inputs ***
     # These should be implemented as needed with backwards compatibility for user that didn't supply the parameters
     #
-    # this is the folder to put the BOM, defaults to _manifest
-    # ManifestDirPath: '_manifest'
+    # this is the folder to put the BOM, defaults to ${{ parameters.BuildDropPath }}
+    # ManifestDirPath: ${{ parameters.BuildDropPath }}
     # configuration json for the tool
     # ConfigFilePath: config.json
 # This will break signing, but it is currently not enabled.
