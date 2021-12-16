@@ -1,16 +1,16 @@
 parameters:
-  - name: "BuildDropPath"
-    default: '$(System.ArtifactsDirectory)'
+  - name: BuildDropPath
+    default: $(System.ArtifactsDirectory)
   # Use the public repo URL, such as `https://github.com/powershell/powershell`
   - name: Build_Repository_Uri
-  - name: "displayName"
-    default: "SBOM"
-  - name: "SBOMGenerator_Formats"
-    default: "spdx:2.2"
+  - name: displayName
+    default: SBOM
+  - name: SBOMGenerator_Formats
+    default: spdx:2.2
   - name: PackageName
   - name: PackageVersion
   - name: sourceScanPath
-    default: '$(Build.SourcesDirectory)'
+    default: $(Build.SourcesDirectory)
 
 steps:
 - task: UseDotNet@2
