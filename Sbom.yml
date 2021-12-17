@@ -21,13 +21,16 @@ steps:
     version: 3.x
 
 - pwsh: |
-    if ('$(PackageName)' -eq 'Unknown') {
-        Write-Warning 'PackageName is not set: $(PackageName)'
+    if ($env:PACKAGENAME -eq 'Unknown') {
+        Write-Warning "PackageName is not set: $env:PACKAGENAME"
     }
-    if ('$(PackageVersion)' -eq '0.0.0') {
-        Write-Warning 'PackageVersion is not set: $(PackageVersion)'
+    if ($env:PACKAGEVERSION -eq '0.0.0') {
+        Write-Warning "PackageVersion is not set: $env:PACKAGEVERSION"
     }
   displayName: '${{ parameters.displayName }} - Verify Parameters'
+  env:
+    PackageVersion: ${{ parameters.PackageVersion }}
+    PackageName: ${{ parameters.PackageName }}
 
 - pwsh: |
     Get-ChildItem env:
