@@ -8,7 +8,9 @@ parameters:
   - name: SBOMGenerator_Formats
     default: spdx:2.2
   - name: PackageName
+    default: Unknown
   - name: PackageVersion
+    default: '0.0.0'
   - name: sourceScanPath
     default: $(Build.SourcesDirectory)
 
@@ -17,6 +19,15 @@ steps:
   displayName: '${{ parameters.displayName }} - Install .NET Core sdk 3.x'
   inputs:
     version: 3.x
+
+- pwsh: |
+    if ('$(PackageName)' -eq 'Unknown') {
+        Write-Warning 'PackageName is not set: $(PackageName)'
+    }
+    if ('$(PackageVersion)' -eq '0.0.0') {
+        Write-Warning 'PackageVersion is not set: $(PackageVersion)'
+    }
+  displayName: '${{ parameters.displayName }} - Verify Parameters'
 
 - pwsh: |
     Get-ChildItem env:
