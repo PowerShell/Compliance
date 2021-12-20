@@ -48,10 +48,24 @@ steps:
       throw "Only one of useCustomEsrpJson and certificateId must be set!"
     }
 
-    $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_CERT_ID]${{ parameters.certificateId }}"
+    $certId = '${{ parameters.certificateId }}'
+
+    $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_CERT_ID]$certId"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
 
+    [string] $VariableName = "EsrpJson"
+    $vstsCommandString = "vso[task.setvariable variable=$VariableName][]"
+    Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
+    Write-Host "##$vstsCommandString"
+
+    $usePgp = $false
+    if($certId -like '*pgp') {
+      $usePgp = $true
+    }
+    $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_USE_PGP]$usePgp"
+    Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
+    Write-Host "##$vstsCommandString"
   displayName: ${{ parameters.displayName }} - Log parameters
 
 - pwsh: |
@@ -117,6 +131,9 @@ steps:
       displayName: ${{ parameters.displayName }}
 
 - pwsh: |
+    if(${env:EsrpJson} -eq '[]') {
+      throw "No Json generated, exiting!  Update template to support ${{ parameters.certificateId }}"
+    }
     Write-Verbose -Verbose "EsrpJson = '${env:EsrpJson}'"
   displayName: ${{ parameters.displayName }} - Log Json
 
@@ -142,7 +159,8 @@ steps:
     inlineOperation: $(EsrpJson)
     Pattern: ${{ parameters.pattern }}
     UseMinimatch: ${{ parameters.useMinimatch }}
-  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
+  condition: |
+    and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
   timeoutInMinutes: 30
 
 - pwsh: |
