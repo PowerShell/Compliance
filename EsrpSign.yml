@@ -14,9 +14,14 @@ parameters:
     default: "pwshSigning"
   - name: "shouldSign"
     default: "auto"
-  - name: "neverCopy"
-    type: boolean
-    default: False
+  - name: OutputMode
+    type: string
+    default: Default
+    values:
+      - Default
+      - AlwaysCopy
+      - NeverCopy
+      - CopyIfNotSigned
   - name: "alwaysCopy"
     type: boolean
     default: False
@@ -74,7 +79,27 @@ steps:
     $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_USE_PGP]$usePgp"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
+
+    if($env:ALWAYS_COPY -eq 'False') {
+      Write-Warning "AlwaysCopy is replaced by OutputMode!"
+    }
+
+    if($env:OUTPUT_MODE -ne 'Default' -and $env:ALWAYS_COPY -ne 'False' ) {
+      throw "Only one of OutputMode and AlwaysCopy can be set!"
+    } elseif ($ALWAYS_COPY -ne 'False') {
+      $effectiveOutputMode = 'AlwaysCopy'
+    } elseif ($OUTPUT_MODE -ne 'Default') {
+      $effectiveOutputMode = $OUTPUT_MODE
+    } else {
+      $effectiveOutputMode = 'CopyIfNotSigned'
+    }
+    $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_COPY_MODE]$effectiveOutputMode"
+    Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
+    Write-Host "##$vstsCommandString"
   displayName: ${{ parameters.displayName }} - Log parameters
+  env:
+    ALWAYS_COPY: ${{ parameters.alwaysCopy }}
+    OUTPUT_MODE: ${{ parameters.OutputMode }}
 
 - pwsh: |
     if ('${{ parameters.shouldSign }}' -eq 'auto') {
@@ -153,17 +178,15 @@ steps:
       Write-Verbose "Creating SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }}" -Verbose
       $null = New-Item -Path '${{ parameters.signOutputPath }}' -ItemType Directory -force
     }
-    Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
-  displayName: ${{ parameters.displayName }} - Copy unsigned files to signed output directory
-  condition: |
-    and(
-      succeeded(),
-      eq('${{ parameters.neverCopy }}', 'False'),
-      or(
-        eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'),
-        ne('${{ parameters.alwaysCopy }}', 'False')
-      )
-    )
+
+    $mode = $env:ESRP_TEMPLATE_COPY_MODE
+    if($mode -eq 'AlwaysCopy' -or ($mode -eq 'CopyIfNotSigned' -and $env:ESRP_TEMPLATE_SHOULD_SIGN -eq $false)) {
+      Write-Verbose "Copying files to SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }} because mode is $mode" -Verbose
+      Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
+    } else {
+      Write-Verbose "Not copying files to SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }} because mode is $mode" -Verbose
+    }
+  displayName: ${{ parameters.displayName }} - Prepare signed output directory
   timeoutInMinutes: 10
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
