@@ -8,19 +8,27 @@ parameters:
   - name: "pattern"
     default: "*.dll,*.exe"
   - name: "useMinimatch"
-    default: "false"
+    type: boolean
+    default: false
   - name: "signingService"
     default: "pwshSigning"
   - name: "shouldSign"
     default: "auto"
+  - name: "neverCopy"
+    type: boolean
+    default: False
   - name: "alwaysCopy"
-    default: "False"
+    type: boolean
+    default: False
   - name: "useCustomEsrpJson"
-    default: "false"
+    type: boolean
+    default: false
   - name: "verifySignature"
-    default: "false"
+    type: boolean
+    default: false
   - name: "pageHash"
-    default: "true"
+    type: boolean
+    default: true
   - name: "displayName"
     default: "ESRP Signing"
 
@@ -147,7 +155,15 @@ steps:
     }
     Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
   displayName: ${{ parameters.displayName }} - Copy unsigned files to signed output directory
-  condition: and(succeeded(), or(eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'),ne('${{ parameters.alwaysCopy }}', 'False')))
+  condition: |
+    and(
+      succeeded(),
+      eq('${{ parameters.neverCopy }}', 'False'),
+      or(
+        eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'),
+        ne('${{ parameters.alwaysCopy }}', 'False')
+      )
+    )
   timeoutInMinutes: 10
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
