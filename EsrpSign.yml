@@ -52,6 +52,7 @@ steps:
     Write-Verbose -Verbose "signingService = '${{ parameters.signingService }}'"
     Write-Verbose -Verbose "shouldSign = '${{ parameters.shouldSign }}'"
     Write-Verbose -Verbose "alwaysCopy = '${{ parameters.alwaysCopy }}'"
+    Write-Verbose -Verbose "outputMode = '${env:OUTPUT_MODE}'"
     Write-Verbose -Verbose "useCustomEsrpJson = '${{ parameters.useCustomEsrpJson }}'"
     Write-Verbose -Verbose "verifySignature = '${{ parameters.verifySignature }}'"
     Write-Verbose -Verbose "pageHash = '${{ parameters.pageHash }}'"
@@ -80,16 +81,16 @@ steps:
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
 
-    if($env:ALWAYS_COPY -eq 'False') {
+    if($env:ALWAYS_COPY -ne 'False') {
       Write-Warning "AlwaysCopy is replaced by OutputMode!"
     }
 
     if($env:OUTPUT_MODE -ne 'Default' -and $env:ALWAYS_COPY -ne 'False' ) {
       throw "Only one of OutputMode and AlwaysCopy can be set!"
-    } elseif ($ALWAYS_COPY -ne 'False') {
+    } elseif ($env:ALWAYS_COPY -ne 'False') {
       $effectiveOutputMode = 'AlwaysCopy'
-    } elseif ($OUTPUT_MODE -ne 'Default') {
-      $effectiveOutputMode = $OUTPUT_MODE
+    } elseif ($env:OUTPUT_MODE -ne 'Default') {
+      $effectiveOutputMode = $env:OUTPUT_MODE
     } else {
       $effectiveOutputMode = 'CopyIfNotSigned'
     }
