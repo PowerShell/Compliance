@@ -174,13 +174,17 @@ steps:
 - pwsh: |
     Write-Verbose "BUILD_OUTPUT_PATH- ${{ parameters.buildOutputPath }}" -Verbose
     Write-Verbose "SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }}" -Verbose
+    $mode = $env:ESRP_TEMPLATE_COPY_MODE
+
     if(!(Test-Path '${{ parameters.signOutputPath }}'))
     {
+      if($mode -eq 'NeverCopy') {
+        throw "Output path does not exist and copy mode is NeverCopy, exiting!"
+      }
       Write-Verbose "Creating SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }}" -Verbose
       $null = New-Item -Path '${{ parameters.signOutputPath }}' -ItemType Directory -force
     }
 
-    $mode = $env:ESRP_TEMPLATE_COPY_MODE
     if($mode -eq 'AlwaysCopy' -or ($mode -eq 'CopyIfNotSigned' -and $env:ESRP_TEMPLATE_SHOULD_SIGN -eq $false)) {
       Write-Verbose "Copying files to SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }} because mode is $mode" -Verbose
       Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
