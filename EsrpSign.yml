@@ -21,7 +21,7 @@ parameters:
       - Default
       - AlwaysCopy
       - NeverCopy
-      - CopyIfNotSigned
+      - CopyIfSigned
   - name: "alwaysCopy"
     type: boolean
     default: False
@@ -92,8 +92,10 @@ steps:
     } elseif ($env:OUTPUT_MODE -ne 'Default') {
       $effectiveOutputMode = $env:OUTPUT_MODE
     } else {
-      $effectiveOutputMode = 'CopyIfNotSigned'
+      # Default
+      $effectiveOutputMode = 'CopyIfSigned'
     }
+
     $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_COPY_MODE]$effectiveOutputMode"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
@@ -185,7 +187,7 @@ steps:
       $null = New-Item -Path '${{ parameters.signOutputPath }}' -ItemType Directory -force
     }
 
-    if($mode -eq 'AlwaysCopy' -or ($mode -eq 'CopyIfNotSigned' -and $env:ESRP_TEMPLATE_SHOULD_SIGN -eq $false)) {
+    if($mode -eq 'AlwaysCopy' -or ($mode -eq 'CopyIfSigned' -and $env:ESRP_TEMPLATE_SHOULD_SIGN -eq $true)) {
       Write-Verbose "Copying files to SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }} because mode is $mode" -Verbose
       Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
     } else {
