@@ -28,7 +28,7 @@ steps:
 - task: UseDotNet@2
   displayName: '${{ parameters.displayName }} - Install .NET Core sdk 2.x'
   inputs:
-    version: 2.x
+    version: 3.x
 
 - pwsh: |
     Write-Verbose -Verbose "buildOutputPath = '${{ parameters.buildOutputPath }}'"
