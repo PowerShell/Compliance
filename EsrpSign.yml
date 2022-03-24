@@ -73,10 +73,7 @@ steps:
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
 
-    $usePgp = $false
-    if($certId -like '*pgp') {
-      $usePgp = $true
-    }
+    $usePgp = $certId -like '*pgp'
     $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_USE_PGP]$usePgp"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
