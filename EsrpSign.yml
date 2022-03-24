@@ -8,19 +8,32 @@ parameters:
   - name: "pattern"
     default: "*.dll,*.exe"
   - name: "useMinimatch"
-    default: "false"
+    type: boolean
+    default: false
   - name: "signingService"
     default: "pwshSigning"
   - name: "shouldSign"
     default: "auto"
+  - name: OutputMode
+    type: string
+    default: Default
+    values:
+      - Default
+      - AlwaysCopy
+      - NeverCopy
+      - CopyIfSigned
   - name: "alwaysCopy"
-    default: "False"
+    type: boolean
+    default: False
   - name: "useCustomEsrpJson"
-    default: "false"
+    type: boolean
+    default: false
   - name: "verifySignature"
-    default: "false"
+    type: boolean
+    default: false
   - name: "pageHash"
-    default: "true"
+    type: boolean
+    default: true
   - name: "displayName"
     default: "ESRP Signing"
 
@@ -39,6 +52,7 @@ steps:
     Write-Verbose -Verbose "signingService = '${{ parameters.signingService }}'"
     Write-Verbose -Verbose "shouldSign = '${{ parameters.shouldSign }}'"
     Write-Verbose -Verbose "alwaysCopy = '${{ parameters.alwaysCopy }}'"
+    Write-Verbose -Verbose "outputMode = '${env:OUTPUT_MODE}'"
     Write-Verbose -Verbose "useCustomEsrpJson = '${{ parameters.useCustomEsrpJson }}'"
     Write-Verbose -Verbose "verifySignature = '${{ parameters.verifySignature }}'"
     Write-Verbose -Verbose "pageHash = '${{ parameters.pageHash }}'"
@@ -48,11 +62,44 @@ steps:
       throw "Only one of useCustomEsrpJson and certificateId must be set!"
     }
 
-    $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_CERT_ID]${{ parameters.certificateId }}"
+    $certId = '${{ parameters.certificateId }}'
+
+    $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_CERT_ID]$certId"
     Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
     Write-Host "##$vstsCommandString"
 
+    [string] $VariableName = "EsrpJson"
+    $vstsCommandString = "vso[task.setvariable variable=$VariableName][]"
+    Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
+    Write-Host "##$vstsCommandString"
+
+    $usePgp = $certId -like '*pgp'
+    $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_USE_PGP]$usePgp"
+    Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
+    Write-Host "##$vstsCommandString"
+
+    if($env:ALWAYS_COPY -ne 'False') {
+      Write-Warning "AlwaysCopy is replaced by OutputMode!"
+    }
+
+    if($env:OUTPUT_MODE -ne 'Default' -and $env:ALWAYS_COPY -ne 'False' ) {
+      throw "Only one of OutputMode and AlwaysCopy can be set!"
+    } elseif ($env:ALWAYS_COPY -ne 'False') {
+      $effectiveOutputMode = 'AlwaysCopy'
+    } elseif ($env:OUTPUT_MODE -ne 'Default') {
+      $effectiveOutputMode = $env:OUTPUT_MODE
+    } else {
+      # Default
+      $effectiveOutputMode = 'CopyIfSigned'
+    }
+
+    $vstsCommandString = "vso[task.setvariable variable=ESRP_TEMPLATE_COPY_MODE]$effectiveOutputMode"
+    Write-Verbose -Message ("sending " + $vstsCommandString) -Verbose
+    Write-Host "##$vstsCommandString"
   displayName: ${{ parameters.displayName }} - Log parameters
+  env:
+    ALWAYS_COPY: ${{ parameters.alwaysCopy }}
+    OUTPUT_MODE: ${{ parameters.OutputMode }}
 
 - pwsh: |
     if ('${{ parameters.shouldSign }}' -eq 'auto') {
@@ -117,20 +164,33 @@ steps:
       displayName: ${{ parameters.displayName }}
 
 - pwsh: |
+    if(${env:EsrpJson} -eq '[]') {
+      throw "No Json generated, exiting!  Update template to support ${{ parameters.certificateId }}"
+    }
     Write-Verbose -Verbose "EsrpJson = '${env:EsrpJson}'"
   displayName: ${{ parameters.displayName }} - Log Json
 
 - pwsh: |
     Write-Verbose "BUILD_OUTPUT_PATH- ${{ parameters.buildOutputPath }}" -Verbose
     Write-Verbose "SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }}" -Verbose
+    $mode = $env:ESRP_TEMPLATE_COPY_MODE
+
     if(!(Test-Path '${{ parameters.signOutputPath }}'))
     {
+      if($mode -eq 'NeverCopy') {
+        throw "Output path does not exist and copy mode is NeverCopy, exiting!"
+      }
       Write-Verbose "Creating SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }}" -Verbose
       $null = New-Item -Path '${{ parameters.signOutputPath }}' -ItemType Directory -force
     }
-    Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
-  displayName: ${{ parameters.displayName }} - Copy unsigned files to signed output directory
-  condition: and(succeeded(), or(eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'),ne('${{ parameters.alwaysCopy }}', 'False')))
+
+    if($mode -eq 'AlwaysCopy' -or ($mode -eq 'CopyIfSigned' -and $env:ESRP_TEMPLATE_SHOULD_SIGN -eq $true)) {
+      Write-Verbose "Copying files to SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }} because mode is $mode" -Verbose
+      Copy-Item -Path ${{ parameters.buildOutputPath }}\* -Dest ${{ parameters.signOutputPath }}\ -Recurse -Force -Verbose
+    } else {
+      Write-Verbose "Not copying files to SIGNED_OUTPUT_PATH- ${{ parameters.signOutputPath }} because mode is $mode" -Verbose
+    }
+  displayName: ${{ parameters.displayName }} - Prepare signed output directory
   timeoutInMinutes: 10
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
@@ -142,7 +202,8 @@ steps:
     inlineOperation: $(EsrpJson)
     Pattern: ${{ parameters.pattern }}
     UseMinimatch: ${{ parameters.useMinimatch }}
-  condition: and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
+  condition: |
+    and(succeeded(), eq(variables['ESRP_TEMPLATE_SHOULD_SIGN'], 'True'))
   timeoutInMinutes: 30
 
 - pwsh: |
