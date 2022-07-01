@@ -27,7 +27,7 @@ steps:
     $esrp = @(@{
       keyCode       = $CertificateId
       operationCode = "StrongNameSign"
-      parameters    = {}
+      parameters    = @{}
       toolName      = "sign"
       toolVersion   = "1.0"
     })
