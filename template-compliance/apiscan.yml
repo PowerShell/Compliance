@@ -7,6 +7,13 @@ parameters:
 
 steps:
 - ${{ if eq(parameters.APIScanEnable, 'true') }}:
+  - task: UseDotNet@2
+    displayName: 'Use .NET runtime'
+    inputs:
+      packageType: sdk
+      version: 6.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
   - task: securedevelopmentteam.vss-secure-development-tools.build-task-apiscan.APIScan@2
     displayName: 'Run APIScan'
     inputs:
