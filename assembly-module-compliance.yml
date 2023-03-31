@@ -30,8 +30,6 @@ steps:
     connectionString: ${{ parameters.connectionString }}
     APIScanEnable: ${{ parameters.APIScan }}
 
-- template: template-compliance/auto-applicability.yml
-
 - template: template-compliance/binskim.yml
   parameters:
     AnalyzeTarget: ${{ parameters.AnalyzeTarget }}
@@ -51,8 +49,6 @@ steps:
     optionsUEPATH: ${{ parameters.optionsUEPATH }}
     optionsRulesDBPath: ${{ parameters.optionsRulesDBPath }}
     optionsFTPath: ${{ parameters.optionsFTPath }}
-
-- template: template-compliance/vulnerability-assessment.yml
 
 - template: template-compliance/publish-security-logs.yml
 

@@ -5,7 +5,7 @@ parameters:
   optionsFTPath: ''
 
 steps:
-- task: securedevelopmentteam.vss-secure-development-tools.build-task-policheck.PoliCheck@1
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-policheck.PoliCheck@2
   displayName: 'Run TermCheck'
   inputs:
     targetType: F
