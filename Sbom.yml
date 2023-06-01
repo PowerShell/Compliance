@@ -54,7 +54,7 @@ steps:
     BuildComponentPath: ${{ parameters.sourceScanPath }}
   env:
     SBOMGenerator_Formats: '${{ parameters.SBOMGenerator_Formats }}'
-    Packaging.EnableSBOMSigning: '${{ parameters.signSBOM }}'
+    PACKAGING_ENABLESBOMSIGNING: '${{ parameters.signSBOM }}'
     # *** Leaving these as documentation of the rest of the inputs ***
     # These should be implemented as needed with backwards compatibility for user that didn't supply the parameters
     #
