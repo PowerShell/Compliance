@@ -15,12 +15,14 @@ parameters:
     default: $(Build.SourcesDirectory)
   - name: signSBOM
     default: true
+  - name: dotNetVersion
+    default: 6.x
 
 steps:
 - task: UseDotNet@2
-  displayName: '${{ parameters.displayName }} - Install .NET Core sdk 6.x'
+  displayName: '${{ parameters.displayName }} - Install .NET ${{ parameters.dotNetVersion }}'
   inputs:
-    version: 6.x
+    version: ${{ parameters.dotNetVersion }}
 
 - pwsh: |
     Write-Verbose "$env:PACKAGENAME -eq 'Unknown'" -Verbose
@@ -42,6 +44,10 @@ steps:
   displayName: '${{ parameters.displayName }} - Capture Environment'
   env:
     Build.Repository.Uri: ${{ parameters.Build_Repository_Uri }}
+    BuildComponentPath: ${{ parameters.sourceScanPath }}
+    BuildDropPath: ${{ parameters.BuildDropPath }}
+    PackageName: ${{ parameters.PackageName }}
+    PackageVersion: ${{ parameters.PackageVersion }}
     SBOMGenerator_Formats: '${{ parameters.SBOMGenerator_Formats }}'
     sourceScanPath: ${{ parameters.sourceScanPath }}
 
