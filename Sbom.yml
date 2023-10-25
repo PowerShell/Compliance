@@ -18,9 +18,9 @@ parameters:
 
 steps:
 - task: UseDotNet@2
-  displayName: '${{ parameters.displayName }} - Install .NET Core sdk 3.x'
+  displayName: '${{ parameters.displayName }} - Install .NET Core sdk 6.x'
   inputs:
-    version: 3.x
+    version: 6.x
 
 - pwsh: |
     Write-Verbose "$env:PACKAGENAME -eq 'Unknown'" -Verbose
@@ -62,15 +62,3 @@ steps:
     # ManifestDirPath: ${{ parameters.BuildDropPath }}
     # configuration json for the tool
     # ConfigFilePath: config.json
-# This will break signing, but it is currently not enabled.
-- pwsh: |
-    $manifestPath = Join-Path '${{ parameters.BuildDropPath }}' -ChildPath '_manifest\manifest.json'
-    if (Test-Path $manifestPath) {
-      Write-Verbose "manifestPath: $manifestPath" -verbose
-      $manifest = Get-Content $manifestPath | ConvertFrom-Json
-      Write-Verbose "oldRepo: $($manifest.Repo)" -verbose
-      $manifest.Repo = '${{ parameters.Build_Repository_Uri}}'
-      Write-Verbose "newRepo: $($manifest.Repo)" -verbose
-      $manifest | convertto-json -Compress | Out-File -FilePath $manifestPath -Force
-    } else { Write-Verbose "cloudbuild manifest doesn't exist" -verbose }
-  displayName: '${{ parameters.displayName }} - Fix repo'
