@@ -1,9 +1,10 @@
 parameters:
   AnalyzeTarget: ''
   AnalyzeSymPath: 'SRV*'
+  AnalyzeIgnorePdbLoadError: false
 
 steps:
-- task: securedevelopmentteam.vss-secure-development-tools.build-task-binskim.BinSkim@3
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-binskim.BinSkim@4
   displayName: 'Run BinSkim '
   inputs:
     InputType: Basic
@@ -12,4 +13,5 @@ steps:
     AnalyzeVerbose: true
     AnalyzeHashes: true
     AnalyzeStatistics: true
+    AnalyzeIgnorePdbLoadError: ${{ parameters.AnalyzeIgnorePdbLoadError }}
   continueOnError: true
