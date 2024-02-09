@@ -10,7 +10,7 @@ steps:
   inputs:
     targetType: F
     targetArgument: ${{ parameters.targetArgument }}
-    optionsFC: 0
+    optionsFC: 1
     optionsPE: '1|2|3|4'
     optionsHMENABLE: 0
     optionsUEPATH: ${{ parameters.optionsUEPATH }}
