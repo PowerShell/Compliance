@@ -1,0 +1,75 @@
+name: Submit release to the WinGet community repository
+
+on:
+  workflow_call:
+    secrets:
+      WINGET_CREATE_GITHUB_TOKEN:
+        description: 'GitHub token with permissions to create PRs against the WinGet community repository.'
+        required: true
+
+jobs:
+  publish-winget:
+    name: Submit to WinGet repository
+
+    # winget-create is only supported on Windows
+    runs-on: windows-latest
+
+    # winget-create will read the following environment variable to access the GitHub token needed for submitting a PR
+    # See https://aka.ms/winget-create-token
+    env:
+      WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_CREATE_GITHUB_TOKEN }}
+
+    steps:
+      - name: Submit package using wingetcreate
+        run: |
+          # Download latest wingetcreate version
+          curl.exe -JLO https://aka.ms/wingetcreate/latest
+
+          # Run once to avoid output of first time telemetry notice in subsequent 'wingetcreate show' command
+          ./wingetcreate settings | Out-Null
+
+          # Get existing WinGet community repository installers info using wingetcreate
+          $json = (./wingetcreate show Microsoft.PowerShell -i --format json | Select -Skip 1 | ConvertFrom-Json)
+          $existingInstallerTypes = @(
+            $json.InstallerType
+            $json | ForEach-Object { $_.Installers.InstallerType }
+          ) | Select-Object -Unique | ForEach-Object { $_.ToLower() }
+
+          # Get new installers from GitHub API
+          $github = Invoke-RestMethod -uri "https://api.github.com/repos/PowerShell/PowerShell/releases"
+          $targetRelease = $github | Where-Object { -not $_.prerelease } | Select -First 1
+          $assets = $targetRelease | Select-Object -ExpandProperty assets -First 1
+          $x64InstallerUrlMSI = $assets | Where-Object -Property name -like '*win-x64.msi' | Select-Object -ExpandProperty browser_download_url
+          $x86InstallerUrlMSI = $assets | Where-Object -Property name -like '*win-x86.msi' | Select-Object -ExpandProperty browser_download_url
+          $arm64InstallerUrlMSI = $assets | Where-Object -Property name -like '*win-arm64.msi' | Select-Object -ExpandProperty browser_download_url
+
+          # URL strings with architecture overrides to pass to wingetcreate
+          $installerUrls = @(
+            "$x64InstallerUrlMSI|x64"
+            "$x86InstallerUrlMSI|x86"
+            "$arm64InstallerUrlMSI|arm"
+            "$arm64InstallerUrlMSI|arm64"
+          )
+
+          # wingetcreate expects the number of installers in the update command to match
+          # the number of existing installers in the community repository manifest.
+          # If we have MSIX in the previous release at WinGet, add it in the update command as well
+          if ($existingInstallerTypes -contains "msix" -or $existingInstallerTypes -contains "appx") {
+            $msixInstallerUrl = $assets | Where-Object -Property name -like '*msixbundle' | Select-Object -ExpandProperty browser_download_url
+
+            # wingetcreate command will certainly fail if existing manifest has MSIX installer but we don't have it yet in the release assets
+            if (-not $msixInstallerUrl) {
+              Write-Error "Existing WinGet manifest contains MSIX installer, but no MSIXbundle found in the release assets. Re-run action when MSIX is available."
+              exit 1
+            }
+
+            $installerUrls += $msixInstallerUrl
+          }
+
+          $packageVersion = $targetRelease.tag_name.Trim('v')
+
+          # Update package & submit PR using wingetcreate
+          ./wingetcreate.exe update Microsoft.PowerShell `
+            --version $packageVersion `
+            --urls $installerUrls `
+            --submit
