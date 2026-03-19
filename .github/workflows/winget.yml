@@ -40,13 +40,11 @@ jobs:
           $targetRelease = $github | Where-Object { -not $_.prerelease } | Select -First 1
           $assets = $targetRelease | Select-Object -ExpandProperty assets -First 1
           $x64InstallerUrlMSI = $assets | Where-Object -Property name -like '*win-x64.msi' | Select-Object -ExpandProperty browser_download_url
-          $x86InstallerUrlMSI = $assets | Where-Object -Property name -like '*win-x86.msi' | Select-Object -ExpandProperty browser_download_url
           $arm64InstallerUrlMSI = $assets | Where-Object -Property name -like '*win-arm64.msi' | Select-Object -ExpandProperty browser_download_url
 
           # URL strings with architecture overrides to pass to wingetcreate
           $installerUrls = @(
             "$x64InstallerUrlMSI|x64"
-            "$x86InstallerUrlMSI|x86"
             "$arm64InstallerUrlMSI|arm"
             "$arm64InstallerUrlMSI|arm64"
           )
