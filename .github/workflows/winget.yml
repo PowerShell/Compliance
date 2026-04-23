@@ -2,6 +2,10 @@ name: Submit release to the WinGet community repository
 
 on:
   workflow_call:
+    inputs:
+      package_version:
+        required: true
+        type: string
     secrets:
       WINGET_CREATE_GITHUB_TOKEN:
         description: 'GitHub token with permissions to create PRs against the WinGet community repository.'
@@ -35,21 +39,58 @@ jobs:
             $json | ForEach-Object { $_.Installers.InstallerType }
           ) | Select-Object -Unique | ForEach-Object { $_.ToLower() }
 
+          $tagVersion = ${{ inputs.package_version }}
           # Get new installers from GitHub API
           $github = Invoke-RestMethod -uri "https://api.github.com/repos/PowerShell/PowerShell/releases"
-          $targetRelease = $github | Where-Object { -not $_.prerelease } | Select -First 1
-          $assets = $targetRelease | Select-Object -ExpandProperty assets -First 1
-          $x64InstallerUrlMSI = $assets | Where-Object -Property name -like '*win-x64.msi' | Select-Object -ExpandProperty browser_download_url
-          $x86InstallerUrlMSI = $assets | Where-Object -Property name -like '*win-x86.msi' | Select-Object -ExpandProperty browser_download_url
-          $arm64InstallerUrlMSI = $assets | Where-Object -Property name -like '*win-arm64.msi' | Select-Object -ExpandProperty browser_download_url
+          
+          $targetRelease = $github | Where-Object { $_.tag_name -eq $tagVersion } | Select-Object -First 1
+          if ($targetRelease -eq $null)
+          {
+              throw "No Github release found for version $tagVersion"
+          }
 
-          # URL strings with architecture overrides to pass to wingetcreate
-          $installerUrls = @(
-            "$x64InstallerUrlMSI|x64"
-            "$x86InstallerUrlMSI|x86"
-            "$arm64InstallerUrlMSI|arm"
-            "$arm64InstallerUrlMSI|arm64"
-          )
+          $prereleaseVersion = $targetRelease.prerelease
+          $packageVersion = $targetRelease.tag_name.Trim('v')
+          $wingetPackageId = $prereleaseVersion ? "Microsoft.PowerShell.Preview" : "Microsoft.PowerShell"
+          $wingetPackageVersion = ""
+
+          if ($prereleaseVersion) {
+              # Map PowerShell release version to Winget package version: '7.6.0-preview.4' -> '7.6.0.4' or '7.6.0-rc.1' -> '7.6.0.101'
+              if ($packageVersion -notmatch "(\d+)\.(\d+)\.(\d+)-(preview|rc)\.(\d+)") {
+                  throw "Version $packageVersion is not in expected format."
+              }
+
+              $major, $minor, $patch, $previewLabel, $revision = $Matches[1..5]
+              
+              $revisionDigit = switch ($previewLabel) {
+                  "preview" { $revision }
+                  "rc" { [int]$revision + 100 }
+                  default { throw "Version $packageVersion with preview label '$previewLabel' is not valid, the preview label must be either 'preview' or 'rc'." }
+              }
+              
+              $wingetPackageVersion = "$major.$minor.$patch.$revisionDigit"
+          }
+          else {
+              # PowerShell stable versions have 3 digit version format, but Winget PackageVersion expects 4 digit version: '7.4.7' Winget PackageVersion needs to be '7.4.7.0'
+              $wingetPackageVersion = $packageVersion + ".0"
+          }
+
+          $assets = $targetRelease | Select-Object -ExpandProperty assets -First 1
+          $installerUrls = @()
+
+          if ($existingInstallerTypes -contains "wix") {
+            $x64InstallerUrlMSI = $assets | Where-Object -Property name -like '*win-x64.msi' | Select-Object -ExpandProperty browser_download_url
+            $x86InstallerUrlMSI = $assets | Where-Object -Property name -like '*win-x86.msi' | Select-Object -ExpandProperty browser_download_url
+            $arm64InstallerUrlMSI = $assets | Where-Object -Property name -like '*win-arm64.msi' | Select-Object -ExpandProperty browser_download_url
+
+            # URL strings with architecture overrides to pass to wingetcreate
+            $installerUrls += @(
+              "$x64InstallerUrlMSI|x64"
+              "$x86InstallerUrlMSI|x86"
+              "$arm64InstallerUrlMSI|arm"
+              "$arm64InstallerUrlMSI|arm64"
+            )
+          }
 
           # wingetcreate expects the number of installers in the update command to match
           # the number of existing installers in the community repository manifest.
@@ -69,7 +110,7 @@ jobs:
           $packageVersion = $targetRelease.tag_name.Trim('v')
 
           # Update package & submit PR using wingetcreate
-          ./wingetcreate.exe update Microsoft.PowerShell `
-            --version $packageVersion `
+          ./wingetcreate.exe update $wingetPackageId `
+            --version $wingetPackageVersion `
             --urls $installerUrls `
             --submit
